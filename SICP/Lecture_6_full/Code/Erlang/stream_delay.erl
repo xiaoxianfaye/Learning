@@ -82,6 +82,25 @@ flatten(StOfSt) ->
 flatmap(P, S) ->
     flatten(map_stream(P, S)).
 
+add_stream(S1, S2) ->
+    case {is_empty_stream(S1), is_empty_stream(S2)} of
+        {true, true} ->
+            the_empty_stream();
+        {true, false} ->
+            S2;
+        {false, true} ->
+            S1;
+        {false, false} ->
+            cons_stream(
+                head(S1) + head(S2),
+                fun() ->
+                    add_stream(tail(S1), tail(S2))
+                end)
+    end.
+
+scale(C, S) ->
+    map_stream(fun(E) -> C * E end, S).
+
 %% Stream Generators
 integers(N) -> integers(1, N).
 
@@ -254,6 +273,42 @@ sieve(S) ->
                             tail(S)))
                 end).
 
+%% Defining streams implicitly
+ones() ->
+    % cons_stream(1, fun() -> ones() end).
+    cons_stream(1, fun ones/0).
+
+integers() ->
+    cons_stream(1, 
+                fun() ->
+                    add_stream(integers(), ones())
+                end).
+
+fibs(N1, N2) ->
+    cons_stream(N1,
+                fun() ->
+                    fibs(N2, N1 + N2)
+                end).
+
+fibs() ->
+    cons_stream(0,
+                fun() ->
+                    cons_stream(1,
+                                fun() ->
+                                    add_stream(fibs(), tail(fibs()))
+                                end)
+                end).
+
+%% Integrator
+integral(S, Init, Dt) ->
+    cons_stream(Init,
+                fun() ->
+                    add_stream(scale(Dt, S), integral(S, Init, Dt))
+                end).
+
+
+
+
 %% Tests
 test_map_stream() ->
     [2, 4] = collect_stream(
@@ -296,6 +351,12 @@ test_flatmap() ->
                         flatmap(fun(X) -> list_to_stream(lists:seq(1, X)) end, 
                                 list_to_stream([2, 3]))),
     test_flatmap_ok.
+
+test_add_stream() ->
+    [4, 6] = collect_stream(add_stream(integers(2), integers(3, 4))).
+
+test_scale() ->
+    [2, 4] = collect_stream(scale(2, integers(2))).    
 
 test_nth_stream() ->
     S = list_to_stream([1, 2]),
@@ -362,6 +423,23 @@ test_primes() ->
     
     test_primes_ok.
 
+test_ones() ->
+    [1, 1, 1, 1, 1] = collect_stream_limit(5, ones()),
+    test_ones_ok.
+
+test_integers() ->
+    [1, 2, 3, 4, 5] = collect_stream_limit(5, integers()),
+    test_integers_ok.
+
+test_fibs() ->
+    [0, 1, 1, 2, 3, 5] = collect_stream_limit(6, fibs(0, 1)),
+    [0, 1, 1, 2, 3, 5] = collect_stream_limit(6, fibs()),
+    test_fibs_ok.
+
+test_integral() ->
+    [0, 1, 2, 3, 4] = collect_stream_limit(5, integral(ones(), 0, 1)),
+    test_integral_ok.
+
 test() ->
     test_map_stream(),
     test_filter_stream(),
@@ -373,6 +451,8 @@ test() ->
     test_acc_stream(),
     test_flatten(),
     test_flatmap(),
+    test_add_stream(),
+    test_scale(),
 
     test_nth_stream(),
 
@@ -386,5 +466,11 @@ test() ->
     test_integers_from(),
     test_no_sevens(),
     test_primes(),
+
+    test_ones(),
+    test_integers(),
+    test_fibs(),
+
+    test_integral(),
 
     test_ok.
