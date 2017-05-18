@@ -306,8 +306,23 @@ integral(S, Init, Dt) ->
                     add_stream(scale(Dt, S), integral(S, Init, Dt))
                 end).
 
+funmaps(Fun, Init, Dt) ->
+    cons_stream(Fun(Init),
+                fun() ->
+                    funmaps(Fun, Init + Dt, Dt)
+                end).
 
+integrator(Fun, Init, Dt) ->
+    Ones = ones(),
+    S = map_stream(Fun, integral(Ones, Init, Dt)),
+    integral(S, 0, Dt).
 
+%% Differential Equation
+ys() ->
+    integral(dys(), 1, 0.001).
+    
+dys() ->
+    map_stream(fun(E) -> E * E end, ys()).
 
 %% Tests
 test_map_stream() ->
@@ -440,6 +455,33 @@ test_integral() ->
     [0, 1, 2, 3, 4] = collect_stream_limit(5, integral(ones(), 0, 1)),
     test_integral_ok.
 
+test_funmaps() ->
+    [0, 1, 2, 3, 4] = collect_stream_limit(5, funmaps(fun(X) -> X end, 0, 1)),
+    test_funmaps_ok.
+
+test_funmaps_integral() ->
+    IdFs = funmaps(fun(X) -> X end, 1, 0.001),
+    S1 = integral(IdFs, 0, 0.001),
+    io:format("~p~n", [nth_stream(1001, S1)]),
+
+    SqFs = funmaps(fun(X) -> X * X end, 1, 0.001),
+    S2 = integral(SqFs, 0, 0.001),
+    io:format("~p~n", [nth_stream(1001, S2)]),
+
+    SqFs2 = funmaps(fun(X) -> X * X end, 0, 0.001),
+    S3 = integral(SqFs2, 0, 0.001),
+    io:format("~p~n", [nth_stream(1001, S3)]).
+
+test_integrator() ->
+    S1 = integrator(fun(X) -> X end, 1, 0.01),
+    io:format("~p~n", [nth_stream(101, S1)]),
+
+    S2 = integrator(fun(X) -> X * X end, 1, 0.01),
+    io:format("~p~n", [nth_stream(101, S2)]),
+
+    S3 = integrator(fun(X) -> X * X end, 0, 0.01),
+    io:format("~p~n", [nth_stream(101, S3)]).
+
 test() ->
     test_map_stream(),
     test_filter_stream(),
@@ -472,5 +514,6 @@ test() ->
     test_fibs(),
 
     test_integral(),
+    test_funmaps(),
 
     test_ok.
