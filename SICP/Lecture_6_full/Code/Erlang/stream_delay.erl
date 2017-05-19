@@ -76,8 +76,27 @@ acc_stream(Proc, A, S) ->
             Proc(head(S), acc_stream(Proc, A, tail(S)))
     end.
 
+% flatten(StOfSt) ->
+%     acc_stream(fun append_stream/2, the_empty_stream(), StOfSt).
+
 flatten(StOfSt) ->
-    acc_stream(fun append_stream/2, the_empty_stream(), StOfSt).
+    case is_empty_stream(StOfSt) of
+        true ->
+            the_empty_stream();
+        false ->
+            flatten(head(StOfSt), tail(StOfSt))
+    end.
+
+flatten(Hs, StOfSt) ->
+    case is_empty_stream(Hs) of
+        true ->
+            flatten(StOfSt);
+        false ->
+            cons_stream(head(Hs),
+                        fun() ->
+                            flatten(tail(Hs), StOfSt)
+                        end)
+    end.
 
 flatmap(P, S) ->
     flatten(map_stream(P, S)).
@@ -167,6 +186,16 @@ print_stream_limit(N, S) ->
         false ->
             io:format("~p~n", [head(S)]),
             print_stream_limit(N - 1, tail(S))
+    end.
+
+print_stream(_S, 0) -> ok;
+print_stream(S, N) ->
+    case is_empty_stream(S) of
+        true ->
+            io:format("Done~n");
+        false ->
+            io:format("~p ", [head(S)]),
+            print_stream(tail(S), N - 1)
     end.
 
 %% Procedures with Stream
@@ -337,6 +366,43 @@ ys() ->
 dys() ->
     map_stream(fun(E) -> E * E end, ys()).
 
+%% sqrt
+sq_stream(N) ->
+    cons_stream(1.0,
+                fun() ->
+                    map_stream(
+                        fun(E) ->
+                            (E + N / E) / 2
+                        end,
+                        sq_stream(N))
+                end).
+
+sqrt(N, Toler) ->
+    stream_limit(sq_stream(N), Toler).
+
+stream_limit(S, Toler) ->
+    stream_limit(head(S), tail(S), Toler).
+
+stream_limit(Pre, S, Toler) ->
+    Next = head(S),
+    if
+        abs(Pre - Next) =< Toler ->
+            Next;
+        true ->
+            stream_limit(Next, tail(S), Toler)
+    end.
+
+%% Stream of pairs
+pair(S) ->
+    flatmap(
+        fun(J) ->
+            map_stream(
+                fun(I) ->
+                    {I, J}
+                end,
+                enumerate_interval(1, J))
+        end, S).
+
 %% Tests
 test_map_stream() ->
     [2, 4] = collect_stream(
@@ -495,6 +561,19 @@ test_integrator() ->
     S3 = integrator(fun(X) -> X * X end, 0, 0.01),
     io:format("~p~n", [nth_stream(101, S3)]).
 
+test_sqrt() ->
+    true = abs(1.414 - sqrt(2, 0.001)) < 0.001,
+    true = abs(3 - sqrt(9, 0.001)) < 0.001,
+
+    test_sqrt_ok.
+
+test_pair() ->
+    [{1, 1}, {1, 2}, 
+     {2, 2}, 
+     {1, 3}, {2, 3}] = collect_stream_limit(5, pair(integers())),
+
+     test_pair_ok.
+
 test() ->
     test_map_stream(),
     test_filter_stream(),
@@ -528,5 +607,8 @@ test() ->
 
     test_integral(),
     test_funmaps(),
+
+    test_sqrt(),
+    test_pair(),
 
     test_ok.
