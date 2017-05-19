@@ -318,9 +318,22 @@ integrator(Fun, Init, Dt) ->
     integral(S, 0, Dt).
 
 %% Differential Equation
-ys() ->
-    integral(dys(), 1, 0.001).
+% ys() ->
+%     integral(dys(), 1, 0.001).
     
+% dys() ->
+%     map_stream(fun(E) -> E * E end, ys()).
+
+integral_delay(DelayS, Init, Dt) ->
+    cons_stream(Init,
+                fun() ->
+                    S = DelayS(),
+                    add_stream(scale(Dt, S), integral(S, Init, Dt))
+                end).
+
+ys() ->
+    integral_delay(fun() -> dys() end, 1, 0.001).
+
 dys() ->
     map_stream(fun(E) -> E * E end, ys()).
 
