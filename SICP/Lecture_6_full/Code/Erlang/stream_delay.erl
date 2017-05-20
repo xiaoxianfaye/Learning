@@ -392,7 +392,7 @@ stream_limit(Pre, S, Toler) ->
             stream_limit(Next, tail(S), Toler)
     end.
 
-%% Stream of pairs
+%% Stream of pairs from an infinite stream
 pair(S) ->
     flatmap(
         fun(J) ->
@@ -402,6 +402,74 @@ pair(S) ->
                 end,
                 enumerate_interval(1, J))
         end, S).
+
+%% Stream of pairs from two infinite streams
+pair(S, T, Fun) ->
+    append_stream(
+        Fun(head(T)),
+        cons_stream(
+            {head(S), head(T)},
+            fun() ->
+                pair(tail(S),
+                     tail(T),
+                     acc_fun(Fun, head(S)))
+            end)).
+
+acc_fun(Fun, Hs) ->
+    fun(E) ->
+        append_stream(
+            Fun(E),
+            cons_stream(
+                {Hs, E},
+                fun the_empty_stream/0))
+    end.
+
+pair(S, T) ->
+    pair(S, T,
+         fun(_E) ->
+            the_empty_stream()
+         end).
+
+%% Stream of all pairs from two infinite streams
+all_pair_acc(S, T, SFun, TFun) ->
+    append_stream(
+        SFun(head(T)),
+        append_stream(
+            TFun(head(S)),
+            cons_stream(
+                {head(S), head(T)},
+                fun() ->
+                    all_pair_acc(tail(S), tail(T),
+                                 acc_first_fun(SFun, head(S)),
+                                 acc_sec_fun(TFun, head(T)))
+                end))).
+
+acc_first_fun(Fun, Hs) ->
+    fun(E) ->
+        append_stream(
+            Fun(E),
+            cons_stream(
+                {Hs, E},
+                fun the_empty_stream/0))
+    end.
+
+acc_sec_fun(Fun, Ht) ->
+    fun(E) ->
+        append_stream(
+            Fun(E),
+            cons_stream(
+                {E, Ht},
+                fun the_empty_stream/0))
+    end.
+
+all_pair_acc(S, T) ->
+    all_pair_acc(S, T,
+        fun(_E) ->
+            the_empty_stream()
+        end,
+        fun(_E) ->
+            the_empty_stream()
+        end).
 
 %% Tests
 test_map_stream() ->
@@ -568,11 +636,35 @@ test_sqrt() ->
     test_sqrt_ok.
 
 test_pair() ->
-    [{1, 1}, {1, 2}, 
-     {2, 2}, 
-     {1, 3}, {2, 3}] = collect_stream_limit(5, pair(integers())),
+    [{1, 1}, 
+     {1, 2}, {2, 2}, 
+     {1, 3}, {2, 3}, {3, 3}] = collect_stream_limit(6, pair(integers())),
 
-     test_pair_ok.
+    test_pair_ok.
+
+test_pair_2() ->
+    [{1, 1},
+     {1, 2}, {2, 2},
+     {1, 3}, {2, 3}, {3, 3},
+     {1, 4}, {2, 4}, {3, 4}, {4, 4}] 
+        = collect_stream_limit(10, pair(integers(), integers())),
+
+    test_pair_2_ok.
+
+test_all_pairs() ->
+    [{1, 1},
+     {1, 2}, 
+     {2, 1},
+     {2, 2}, 
+     {1, 3}, {2, 3},
+     {3, 1}, {3, 2}, 
+     {3, 3},
+     {1, 4}, {2, 4}, {3, 4},
+     {4, 1}, {4, 2}, {4, 3},
+     {4, 4}] 
+        = collect_stream_limit(16, all_pair_acc(integers(), integers())),
+
+    test_all_pairs_ok.
 
 test() ->
     test_map_stream(),
@@ -610,5 +702,7 @@ test() ->
 
     test_sqrt(),
     test_pair(),
+    test_pair_2(),
+    test_all_pairs(),
 
     test_ok.
