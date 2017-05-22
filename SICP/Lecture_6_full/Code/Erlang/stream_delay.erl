@@ -471,6 +471,31 @@ all_pair_acc(S, T) ->
             the_empty_stream()
         end).
 
+%% Stream of all pairs, recursive thinking
+all_pair(S, T) ->
+    cons_stream(
+        {head(S), head(T)},
+        fun() ->
+            interleave(
+                map_stream(
+                    fun(E) -> {head(S), E} end,
+                    tail(T)),
+                all_pair(tail(S), T))
+        end).
+
+interleave(S1, S2) ->
+    case is_empty_stream(S1) of
+        true ->
+            S2;
+        false ->
+            cons_stream(
+                head(S1),
+                fun() ->
+                    interleave(S2, tail(S1))
+                end)
+    end.
+
+
 %% Tests
 test_map_stream() ->
     [2, 4] = collect_stream(
