@@ -139,25 +139,45 @@ interleave(
     ),
     [{1, 5}, ...]
 )
-<=> % 根据interleave定义替换内层interleave
+<=> % 根据all_pair定义替换all_pair
+interleave(
+    interleave(
+        cons_stream(
+            {3, 1},
+            interleave(
+                [{3, 2}, {3, 3}, ...],
+                all_pair([4, ...], [1, 2, 3, 4, ...])
+            )
+        ),
+        [{2, 3}, {2, 4}, ...]
+    ),
+    [{1, 5}, ...]
+)
+<=> % 根据interleave定义替换第二层interleave
 interleave(
     cons_stream(
         {3, 1},
         interleave(
             [{2, 3}, {2, 4}, ...],
-            all_pair([4, ...], [1, 2, 3, 4, ...])
+            interleave(
+                [{3, 2}, {3, 3}, ...],
+                all_pair([4, ...], [1, 2, 3, 4, ...])
+            )
         )
-    )
+    ),
     [{1, 5}, ...]
 )
-<=> % 根据interleave定义替换外层interleave
+<=> % 根据interleave定义替换第一层interleave
 cons_stream(
     {3, 1},
     interleave(
         [{1, 5}, ...],
         interleave(
             [{2, 3}, {2, 4}, ...],
-            all_pair([4, ...], [1, 2, 3, 4, ...])
+            interleave(
+                [{3, 2}, {3, 3}, ...],
+                all_pair([4, ...], [1, 2, 3, 4, ...])
+            )
         )
     )
 )
@@ -168,7 +188,10 @@ interleave(
     [{1, 5}, ...],
     interleave(
         [{2, 3}, {2, 4}, ...],
-        all_pair([4, ...], [1, 2, 3, 4, ...])
+        interleave(
+            [{3, 2}, {3, 3}, ...],
+            all_pair([4, ...], [1, 2, 3, 4, ...])
+        )
     )
 )
 ...

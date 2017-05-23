@@ -676,7 +676,7 @@ test_pair_2() ->
 
     test_pair_2_ok.
 
-test_all_pairs() ->
+test_all_pair() ->
     [{1, 1},
      {1, 2}, 
      {2, 1},
@@ -689,7 +689,13 @@ test_all_pairs() ->
      {4, 4}] 
         = collect_stream_limit(16, all_pair_acc(integers(), integers())),
 
-    test_all_pairs_ok.
+    test_all_pair_ok.
+
+test_all_pair_2() ->
+    [{1, 1}, {1, 2}, {2, 1}, {1, 3}, {2, 2}, {1, 4}, {3, 1}, {1, 5}] 
+        = collect_stream_limit(8, all_pair(integers(), integers())),
+
+    test_all_pair_2_ok.    
 
 test() ->
     test_map_stream(),
@@ -728,6 +734,7 @@ test() ->
     test_sqrt(),
     test_pair(),
     test_pair_2(),
-    test_all_pairs(),
+    test_all_pair(),
+    test_all_pair_2(),
 
     test_ok.
