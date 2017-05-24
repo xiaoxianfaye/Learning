@@ -495,6 +495,17 @@ interleave(S1, S2) ->
                 end)
     end.
 
+%% Rewriting up pairs using stream interleaving
+up_pair(S, T) ->
+    cons_stream(
+        {head(S), head(T)},
+        fun() ->
+            interleave(
+                map_stream(
+                    fun(E) -> {head(S), E} end,
+                    tail(T)),
+                up_pair(tail(S), tail(T)))
+        end).
 
 %% Tests
 test_map_stream() ->
@@ -695,7 +706,14 @@ test_all_pair_2() ->
     [{1, 1}, {1, 2}, {2, 1}, {1, 3}, {2, 2}, {1, 4}, {3, 1}, {1, 5}] 
         = collect_stream_limit(8, all_pair(integers(), integers())),
 
-    test_all_pair_2_ok.    
+    test_all_pair_2_ok.
+
+test_up_pair() ->
+    [{1, 1}, {1, 2}, {2, 2}, {1, 3}, {2, 3}, {1, 4}, {3, 3}, {1, 5}]
+        = collect_stream_limit(8, up_pair(integers(), integers())),
+
+    test_up_pair_ok.    
+
 
 test() ->
     test_map_stream(),
@@ -736,5 +754,6 @@ test() ->
     test_pair_2(),
     test_all_pair(),
     test_all_pair_2(),
+    test_up_pair(),
 
     test_ok.
