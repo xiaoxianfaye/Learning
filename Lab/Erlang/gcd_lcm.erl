@@ -60,17 +60,17 @@ union([H1|T1], S2) ->
 
 %% Greatest Common Divisor
 gcd(Ns) ->
-	unified_proc(fun intersect/1, fun lists:min/1, Ns).
+    unified_proc(fun intersect/1, fun lists:min/1, Ns).
 
 %% Least Common Multiple
 lcm(Ns) ->
-	unified_proc(fun union/1, fun lists:max/1, Ns).
+    unified_proc(fun union/1, fun lists:max/1, Ns).
 
 unified_proc(SetOp, MinOrMax, Ns) ->
-	{ListOfPFs, ListOfPFPs} = prime_factorization_list(Ns),
-	PFs = SetOp(ListOfPFs),
-	PFPs = primefactor_powers(PFs, ListOfPFPs, MinOrMax),
-	lists:foldl(fun({PF, P}, Acc) -> pow(PF, P) * Acc end, 1, PFPs).
+    {ListOfPFs, ListOfPFPs} = prime_factorization_list(Ns),
+    PFs = SetOp(ListOfPFs),
+    PFPs = primefactor_powers(PFs, ListOfPFPs, MinOrMax),
+    lists:foldl(fun({PF, P}, Acc) -> pow(PF, P) * Acc end, 1, PFPs).
 
 prime_factorization_list(Ns) ->
     ListOfPFPs = [prime_factorization(N) || N <- Ns],
@@ -79,14 +79,14 @@ prime_factorization_list(Ns) ->
     {ListOfPFs, ListOfPFPs}.
 
 primefactor_powers([], _ListOfPFPs, _MinOrMax) ->
-	[];
+    [];
 primefactor_powers([H|T], ListOfPFPs, MinOrMax) ->
     Ps = [begin
-			case lists:keyfind(H, 1, PFPs) of
-    			{H, Power} -> Power;
-    			false -> 0
-    		end
-     	  end || PFPs <- ListOfPFPs],
+            case lists:keyfind(H, 1, PFPs) of
+                {H, Power} -> Power;
+                false -> 0
+            end
+           end || PFPs <- ListOfPFPs],
     [{H, MinOrMax(Ps)} | primefactor_powers(T, ListOfPFPs, MinOrMax)].    
 
 %% Auxilliary
@@ -103,9 +103,9 @@ is_prime(I, N) ->
     end.
 
 pow(_N, 0) ->
-	1;
+    1;
 pow(N, P) ->
-	N * pow(N, P - 1).
+    N * pow(N, P - 1).
 
 %% Tests
 test_is_prime() ->
@@ -116,9 +116,9 @@ test_is_prime() ->
     test_is_prime_ok.
 
 test_pow() ->
-	1 = pow(1, 0),
-	8 = pow(2, 3),
-	test_pow_ok.
+    1 = pow(1, 0),
+    8 = pow(2, 3),
+    test_pow_ok.
 
 test_prime_factorization() ->
     [{2, 1}] = prime_factorization(2),
@@ -163,14 +163,14 @@ test_union() ->
     test_union_ok.
 
 test_gcd() ->
-	30 = gcd([90, 420, 9450]),
+    30 = gcd([90, 420, 9450]),
 
-	test_gcd_ok.
+    test_gcd_ok.
 
 test_lcm() ->
-	18900 = lcm([90, 420, 9450]),
+    18900 = lcm([90, 420, 9450]),
 
-	test_lcm_ok.
+    test_lcm_ok.
 
 test() ->
     test_is_prime(),
