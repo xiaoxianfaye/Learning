@@ -24,18 +24,6 @@ acc_prime_factors(PFP, PFPs) ->
             lists:keyreplace(PFP, 1, PFPs, {PF, Power + 1})
     end.
 
-is_prime(N) -> is_prime(2, N).
-
-is_prime(I, N) when I =:= N -> 
-    true;
-is_prime(I, N) ->
-    if
-        N rem I =:= 0 ->
-            false;
-        true ->
-            is_prime(I + 1, N)
-    end.
-
 %% Set
 intersect(Ss) ->
     reduce(fun intersect/2, Ss).
@@ -72,17 +60,52 @@ union([H1|T1], S2) ->
 
 %% Greatest Common Divisor
 gcd(Ns) ->
+	unified_proc(fun intersect/1, fun lists:min/1, Ns).
+
+%% Least Common Multiple
+lcm(Ns) ->
+	unified_proc(fun union/1, fun lists:max/1, Ns).
+
+unified_proc(SetOp, MinOrMax, Ns) ->
+	{ListOfPFs, ListOfPFPs} = prime_factorization_list(Ns),
+	PFs = SetOp(ListOfPFs),
+	PFPs = primefactor_powers(PFs, ListOfPFPs, MinOrMax),
+	lists:foldl(fun({PF, P}, Acc) -> pow(PF, P) * Acc end, 1, PFPs).
+
+prime_factorization_list(Ns) ->
     ListOfPFPs = [prime_factorization(N) || N <- Ns],
     ListOfPFsAndPs = [lists:unzip(PFPs) || PFPs <- ListOfPFPs],
     {ListOfPFs, _} = lists:unzip(ListOfPFsAndPs),
-    CPFs = intersect(ListOfPFs),
-    CPFPs = common_primefactor_powers(CPFs, ListOfPFPs),
-    CPFPs.
+    {ListOfPFs, ListOfPFPs}.
 
-common_primefactor_powers(CPFs, ListOfPFPs) ->
-    
+primefactor_powers([], _ListOfPFPs, _MinOrMax) ->
+	[];
+primefactor_powers([H|T], ListOfPFPs, MinOrMax) ->
+    Ps = [begin
+			case lists:keyfind(H, 1, PFPs) of
+    			{H, Power} -> Power;
+    			false -> 0
+    		end
+     	  end || PFPs <- ListOfPFPs],
+    [{H, MinOrMax(Ps)} | primefactor_powers(T, ListOfPFPs, MinOrMax)].    
 
+%% Auxilliary
+is_prime(N) -> is_prime(2, N).
 
+is_prime(I, N) when I =:= N -> 
+    true;
+is_prime(I, N) ->
+    if
+        N rem I =:= 0 ->
+            false;
+        true ->
+            is_prime(I + 1, N)
+    end.
+
+pow(_N, 0) ->
+	1;
+pow(N, P) ->
+	N * pow(N, P - 1).
 
 %% Tests
 test_is_prime() ->
@@ -91,6 +114,11 @@ test_is_prime() ->
     false = is_prime(4),
     true = is_prime(5),
     test_is_prime_ok.
+
+test_pow() ->
+	1 = pow(1, 0),
+	8 = pow(2, 3),
+	test_pow_ok.
 
 test_prime_factorization() ->
     [{2, 1}] = prime_factorization(2),
@@ -134,11 +162,25 @@ test_union() ->
 
     test_union_ok.
 
+test_gcd() ->
+	30 = gcd([90, 420, 9450]),
+
+	test_gcd_ok.
+
+test_lcm() ->
+	18900 = lcm([90, 420, 9450]),
+
+	test_lcm_ok.
+
 test() ->
     test_is_prime(),
+    test_pow(),
     test_prime_factorization(),
 
     test_intersect(),
     test_union(),
+
+    test_gcd(),
+    test_lcm(),
 
     test_ok.

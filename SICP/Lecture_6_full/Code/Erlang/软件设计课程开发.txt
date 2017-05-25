@@ -49,3 +49,7 @@
     3) 求解LCM
        union(prime factor sets) => lists:map [{prime factor, greatest power}]
        [{2, 2}, {3, 3}, {5, 2}, {7, 1}] => lists:fold 2^2 * 3^3 * 5^2 * 7^1 = 18900
+
+3. 可以看到求GCD和LCM的过程是统一的，只是集合操作、取幂指数的最小值和最大值操作不一样。
+   可以描述出来，然后解释执行。
+   
