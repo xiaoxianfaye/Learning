@@ -27,21 +27,24 @@
     
 # 3. 软件求解步骤
 ## 3.1 可计算化
-    输入：[number]     e.g.[90, 420, 9450]
-    输出：{gcd, lcm}   (expected: {30, 18900})
+输入：[number]     e.g.[90, 420, 9450]
+输出：{gcd, lcm}   (expected: {30, 18900})
    
 ## 3.2 设计计算模型和语义
 1. 把n个自然数逐个分解质因数：
+
     lists:map([number]) => prime factor sets (Erlang: List)
     90   => [{2, 1}, {3, 2}, {5, 1}]
     420  => [{2, 2}, {3, 1}, {5, 1}, {7, 1}]
     9450 => [{2, 1}, {3, 3}, {5, 2}, {7, 1}]
        
 2. 求解GCD
+
     intersect(prime factor sets) => lists:map [{prime factor, least power}]
     [{2, 1}, {3, 1}, {5, 1}] => lists:fold 2^1 * 3^1 * 5^1 = 30
        
 3. 求解LCM
+
     union(prime factor sets) => lists:map [{prime factor, greatest power}]
     [{2, 2}, {3, 3}, {5, 2}, {7, 1}] => lists:fold 2^2 * 3^3 * 5^2 * 7^1 = 18900
 
