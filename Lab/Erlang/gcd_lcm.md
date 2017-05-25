@@ -35,7 +35,7 @@
     
 例如上例中，有2、3、5、7这几个质因数，2的最高次方为2, 3的最高次方为3，5的最高次方为2, 7的最高次方为1。所以最小公倍数为：
 ```
-    (2^2)*(3^3)*(5^2)*7 = 18900
+(2^2)*(3^3)*(5^2)*7 = 18900
 ```
     
 # 3. 软件求解步骤
@@ -46,22 +46,22 @@
 ## 3.2 设计计算模型和语义
 1. 把n个自然数逐个分解质因数：
 ```
-    lists:map([number]) => prime factor sets (Erlang: List)
-    90   => [{2, 1}, {3, 2}, {5, 1}]
-    420  => [{2, 2}, {3, 1}, {5, 1}, {7, 1}]
-    9450 => [{2, 1}, {3, 3}, {5, 2}, {7, 1}]
+lists:map([number]) => prime factor sets (Erlang: List)
+90   => [{2, 1}, {3, 2}, {5, 1}]
+420  => [{2, 2}, {3, 1}, {5, 1}, {7, 1}]
+9450 => [{2, 1}, {3, 3}, {5, 2}, {7, 1}]
 ```
 
 2. 求解GCD
 ```
-    intersect(prime factor sets) => lists:map [{prime factor, least power}]
-    [{2, 1}, {3, 1}, {5, 1}] => lists:fold 2^1 * 3^1 * 5^1 = 30
+intersect(prime factor sets) => lists:map [{prime factor, least power}]
+[{2, 1}, {3, 1}, {5, 1}] => lists:fold 2^1 * 3^1 * 5^1 = 30
 ```
 
 3. 求解LCM
 ```
-    union(prime factor sets) => lists:map [{prime factor, greatest power}]
-    [{2, 2}, {3, 3}, {5, 2}, {7, 1}] => lists:fold 2^2 * 3^3 * 5^2 * 7^1 = 18900
+union(prime factor sets) => lists:map [{prime factor, greatest power}]
+[{2, 2}, {3, 3}, {5, 2}, {7, 1}] => lists:fold 2^2 * 3^3 * 5^2 * 7^1 = 18900
 ```
 
 4. 可以看到求GCD和LCM的过程是统一的，只是集合操作、取幂指数的最小值和最大值操作不一样。可以描述出来，然后解释执行？
