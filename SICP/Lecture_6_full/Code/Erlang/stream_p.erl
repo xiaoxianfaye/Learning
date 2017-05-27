@@ -120,4 +120,92 @@ test() ->
 
     test_ok.
 
+%% Cesaro
+-define(RANGE, 100000).
 
+rand_stream() ->
+    {Rd, NSeed} = random:uniform_s(?RANGE, erlang:now()),
+    cons_stream(
+        {Rd, NSeed},
+        fun(RS) ->
+            map_stream(
+                fun({_, Seed}) ->
+                    random:uniform_s(?RANGE, Seed)
+                end,
+                RS)
+        end).
+
+map_stream(Proc, S) ->
+    case is_empty_stream(S) of
+        true ->
+            the_empty_stream();
+        false ->
+            cons_stream(
+                Proc(head(S)), 
+                fun(_) ->
+                    map_stream(Proc, tail(S))
+                end)
+    end.    
+
+map_successive_pairs(F, S) ->
+    cons_stream(
+        F(head(S), head(tail(S))),
+        fun(_) ->
+            map_successive_pairs(
+                F,
+                tail(tail(S)))
+        end).
+
+gcd(X, 0) -> X;
+gcd(X, Y) -> gcd(Y, X rem Y).
+
+cesaro_stream(Rs) ->
+    map_successive_pairs(
+        fun({R1, _}, {R2, _}) ->
+            gcd(R1, R2) =:= 1
+        end, Rs).
+
+monte_carlo(S, Total, Passed) ->
+    NPassed = case head(S) of
+                true ->
+                    Passed + 1;
+                false ->
+                    Passed
+              end,
+    cons_stream(
+        NPassed / (Total + 1),
+        fun(_) ->
+            monte_carlo(tail(S), Total + 1, NPassed)
+        end).
+
+pis() ->
+    map_stream(
+        fun(0.0) -> 0.0;
+           (P) -> math:sqrt(6 / P)
+        end,
+        monte_carlo(cesaro_stream(rand_stream()), 0, 0)).
+
+pi(Toler) ->
+    stream_limit(pis(), Toler).
+
+stream_limit(S, Toler) ->
+    stream_limit(head(S), tail(S), Toler).
+
+stream_limit(Pre, S, Toler) ->
+    Next = head(S),
+    if
+        abs(Pre - Next) =< Toler ->
+            Next;
+        true ->
+            stream_limit(Next, tail(S), Toler)
+    end.
+
+%% A functional-programming view of time
+stream_withdraw(Balance, AmountS) ->
+    cons_stream(
+        Balance,
+        fun(_) ->
+            stream_withdraw(
+                Balance - head(AmountS),
+                tail(AmountS))
+        end).
