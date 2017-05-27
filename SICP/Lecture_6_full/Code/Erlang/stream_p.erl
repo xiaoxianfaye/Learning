@@ -76,26 +76,48 @@ add_stream(S1, S2) ->
         {false, false} ->
             cons_stream(
                 head(S1) + head(S2),
-                fun() ->
+                fun(_S) ->
                     add_stream(tail(S1), tail(S2))
                 end)
     end.    
 
-%% Defining streams implicitly
-ones() ->
-    cons_stream(1, fun(S) -> S end).
+%% Terminals
+nth_stream(Idx, S) ->
+    case is_empty_stream(S) of
+        true ->
+            throw(no_this_idx);
+        false ->
+            if
+                Idx =:= 1 ->
+                    head(S);
+                true ->
+                    nth_stream(Idx - 1, tail(S))
+            end
+    end.
 
-integers() ->
-    cons_stream(1, 
-                fun(I) ->
-                    add_stream(I, ones())
-                end).
+test() ->
+    Ones = cons_stream(1, fun(S) -> S end),
 
-fibs() ->
-    cons_stream(0,
-                fun(S1) ->
-                    cons_stream(1,
-                                fun(S2) ->
-                                    add_stream(S1, S2)
-                                end)
-                end).
+    Ins = cons_stream(
+            1,
+            fun(I) ->
+                add_stream(I, Ones)
+            end),
+
+    Fibs = cons_stream(
+            0,
+            fun(S1) ->
+                cons_stream(
+                    1,
+                    fun(S2) ->
+                        add_stream(S1, S2)
+                    end)
+            end),
+
+    1 = nth_stream(4, Ones),
+    4 = nth_stream(4, Ins),
+    2 = nth_stream(4, Fibs),
+
+    test_ok.
+
+
