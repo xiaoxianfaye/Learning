@@ -1,9 +1,10 @@
 package fayelab.sicp.stream.t201706;
 
-import static fayelab.sicp.stream.t201706.Procedures.*;
 import static java.util.Arrays.asList;
 
 import junit.framework.TestCase;
+
+import static fayelab.sicp.stream.t201706.Procedures.*;
 
 public class ProceduresTest extends TestCase
 {

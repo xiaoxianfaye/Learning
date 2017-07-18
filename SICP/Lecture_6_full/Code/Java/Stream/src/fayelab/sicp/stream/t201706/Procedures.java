@@ -83,28 +83,28 @@ public class Procedures
         return s;
     }
 
-    public static <E1, E2> BiTuple<E1, E2> biTuple(E1 element1, E2 element2)
+    public static <T1, T2> BiTuple<T1, T2> biTuple(T1 element1, T2 element2)
     {
         return new BiTuple<>(element1, element2);
     }
     
-    static class BiTuple<E1, E2>
+    static class BiTuple<T1, T2>
     {
-        private E1 element1;
-        private E2 element2;
+        private T1 element1;
+        private T2 element2;
         
-        public BiTuple(E1 element1, E2 element2)
+        public BiTuple(T1 element1, T2 element2)
         {
             this.element1 = element1;
             this.element2 = element2;
         }
     
-        public E1 getElement1()
+        public T1 getElement1()
         {
             return element1;
         }
     
-        public E2 getElement2()
+        public T2 getElement2()
         {
             return element2;
         }

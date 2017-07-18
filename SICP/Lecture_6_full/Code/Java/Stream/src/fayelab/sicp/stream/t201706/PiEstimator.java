@@ -16,8 +16,8 @@ public class PiEstimator
     private static double monteCarlo(int count, BooleanSupplier cesaro)
     {
         long trueCount = IntStream.range(1, count + 1)
-                                  .mapToObj((c) -> cesaro.getAsBoolean())
-                                  .filter((b) -> b)
+                                  .mapToObj(c -> cesaro.getAsBoolean())
+                                  .filter(b -> b)
                                   .count();
         return 1.0 * trueCount / count;
     }
@@ -46,7 +46,7 @@ public class PiEstimator
     
     private static DoubleStream estimate(int...counts)
     {
-        return IntStream.of(counts).mapToDouble((count) -> estimate(count));
+        return IntStream.of(counts).mapToDouble(count -> estimate(count));
     }
     
     public static void main(String[] args)
