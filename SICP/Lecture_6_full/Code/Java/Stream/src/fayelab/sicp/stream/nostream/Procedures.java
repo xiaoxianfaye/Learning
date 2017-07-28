@@ -1,7 +1,9 @@
-package fayelab.sicp.stream.t201706;
+package fayelab.sicp.stream.nostream;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static java.util.Arrays.asList;
 
 public class Procedures
 {
@@ -46,6 +48,42 @@ public class Procedures
         
         return result;
     }
+    
+    public static List<List<Integer>> primeSumPairs(int n)
+    {
+        List<List<Integer>> result = new ArrayList<>();
+        
+        for(int i = 2; i <= n; i++)
+        {
+            for(int j = 1; j < i; j++)
+            {
+                if(isPrime(i + j))
+                {
+                    result.add(asList(i, j));
+                }
+            }
+        }
+        
+        return result;
+    }
+    
+    public static List<List<Integer>> triples(int n)
+    {
+        List<List<Integer>> result = new ArrayList<>();
+        
+        for(int i = 3; i <= n; i++)
+        {
+            for(int j = 2; j < i; j++)
+            {
+                for(int k = 1; k < j; k++)
+                {
+                    result.add(asList(i, j, k));
+                }
+            }
+        }
+        
+        return result;
+    }
 
     private static boolean isOdd(int n)
     {
@@ -81,6 +119,19 @@ public class Procedures
         }
         
         return s;
+    }
+    
+    private static boolean isPrime(int n)
+    {
+        for(int i = 2; i < n; i++)
+        {
+            if(n % i == 0)
+            {
+                return false;
+            }
+        }
+        
+        return true;
     }
 
     public static <T1, T2> BiTuple<T1, T2> biTuple(T1 element1, T2 element2)

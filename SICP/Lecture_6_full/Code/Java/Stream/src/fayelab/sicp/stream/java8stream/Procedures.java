@@ -1,4 +1,4 @@
-package fayelab.sicp.stream.t201706;
+package fayelab.sicp.stream.java8stream;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,8 +6,9 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static java.util.Arrays.asList;
+import static java.util.stream.Collectors.toList;
 
-public class ProceduresWithJava8Stream
+public class Procedures
 {
     @SuppressWarnings("unchecked")
     static <T> Stream<T> enumTree(Object obj)
@@ -48,6 +49,19 @@ public class ProceduresWithJava8Stream
         return result;
     }
     
+    public static List<List<Integer>> primeSumPairs(int n)
+    {
+        return enumInterval(2, n).flatMap(i -> enumInterval(1, i - 1).map(j -> asList(i, j))
+                                                                     .filter(pair -> isPrime(pair.get(0) + pair.get(1))))
+                                 .collect(toList());
+    }
+    
+    public static List<List<Integer>> triples(int n)
+    {
+        return enumInterval(3, n).flatMap(i -> enumInterval(2, i - 1).flatMap(j -> enumInterval(1, j - 1).map(k -> asList(i, j, k))))
+                                 .collect(toList());
+    }
+    
     private static boolean isOdd(int n)
     {
         return n % 2 == 1;
@@ -82,6 +96,11 @@ public class ProceduresWithJava8Stream
         }
         
         return s;
+    }
+    
+    private static boolean isPrime(int n)
+    {
+        return enumInterval(2, n - 1).noneMatch(i -> n % i == 0);
     }
 
     public static <T1, T2> BiTuple<T1, T2> biTuple(T1 element1, T2 element2)

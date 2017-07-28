@@ -1,4 +1,4 @@
-package fayelab.sicp.stream.t201706;
+package fayelab.sicp.stream.pi;
 
 import java.util.function.BooleanSupplier;
 import java.util.stream.DoubleStream;

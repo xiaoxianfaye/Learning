@@ -1,13 +1,12 @@
-package fayelab.sicp.stream.t201706;
+package fayelab.sicp.stream.java8stream;
 
+import static fayelab.sicp.stream.java8stream.Procedures.*;
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
 
 import junit.framework.TestCase;
 
-import static fayelab.sicp.stream.t201706.ProceduresWithJava8Stream.*;
-
-public class ProceduresWithJava8StreamTest extends TestCase
+public class ProceduresTest extends TestCase
 {
     public void test_enumTree()
     {
@@ -36,5 +35,20 @@ public class ProceduresWithJava8StreamTest extends TestCase
     public void test_oddFibs()
     {
         assertEquals(asList(1, 2, 4, 5), oddFibs(6));
+    }
+    
+    public void test_primeSumPairs()
+    {
+        assertEquals(asList(asList(2, 1), asList(3, 2), asList(4, 1), asList(4, 3), asList(5, 2)), 
+                primeSumPairs(5));
+    }
+    
+    public void test_triples()
+    {
+        assertEquals(asList(asList(3, 2, 1),
+                            asList(4, 2, 1), asList(4, 3, 1), asList(4, 3, 2),
+                            asList(5, 2, 1), asList(5, 3, 1), asList(5, 3, 2), 
+                            asList(5, 4, 1), asList(5, 4, 2), asList(5, 4, 3)),
+                     triples(5));
     }
 }
