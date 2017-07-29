@@ -29,6 +29,26 @@ public class ReQueens
                                                            enumInterval(1, size)), 
                                     fillRows(size, row - 1)));
     }
+    
+    public static Optional<List<List<List<Integer>>>> solveAll2(int n)
+    {
+        List<List<List<Integer>>> solutions = fillRows2(n, n);
+        return solutions.isEmpty() ? Optional.empty() : Optional.of(solutions);
+    }
+    
+    private static List<List<List<Integer>>> fillRows2(int size, int row)
+    {
+        if(row == 0)
+        {
+            List<List<List<Integer>>> emptyList = new ArrayList<>();
+            emptyList.add(emptyBoard());
+            return emptyList;
+        }
+        
+        return filterStream((List<List<Integer>> poses) -> isSafe(poses), 
+                            flatmap(col -> mapStream(restPoses -> adjoinPos(row, col, restPoses), fillRows2(size, row - 1)),
+                                    enumInterval(1, size)));
+    }
 
     private static List<List<Integer>> emptyBoard()
     {
