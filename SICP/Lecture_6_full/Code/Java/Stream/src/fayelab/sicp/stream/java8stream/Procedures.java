@@ -61,7 +61,7 @@ public class Procedures
         return enumInterval(3, n).flatMap(i -> enumInterval(2, i - 1).flatMap(j -> enumInterval(1, j - 1).map(k -> asList(i, j, k))))
                                  .collect(toList());
     }
-    
+
     private static boolean isOdd(int n)
     {
         return n % 2 == 1;

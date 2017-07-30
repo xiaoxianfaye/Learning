@@ -22,7 +22,7 @@ public class ProceduresTest extends TestCase
     public void test_primeSumPairs()
     {
         assertEquals(asList(asList(2, 1), asList(3, 2), asList(4, 1), asList(4, 3), asList(5, 2)), 
-                primeSumPairs(5));
+                     primeSumPairs(5));
     }
     
     public void test_triples()

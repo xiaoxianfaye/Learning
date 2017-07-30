@@ -1,0 +1,152 @@
+package fayelab.sicp.stream.delaystream;
+
+import junit.framework.TestCase;
+
+import static java.util.Arrays.asList;
+
+import java.util.List;
+
+import static fayelab.sicp.stream.delaystream.StreamOp.*;
+
+public class StreamOpTest extends TestCase
+{
+    public void test_stream_constructors_and_selectors()
+    {
+        assertEquals(asList(1, 2, 3), collectStream(consStream(1, () -> listToStream(2, 3))));
+        assertEquals(asList(1), collectStream(consStream(1, () -> listToStream())));
+        assertEquals(asList(), collectStream(theEmptyStream()));
+    }
+    
+    public void test_mapStream()
+    {
+        assertEquals(asList(2, 4), collectStream(mapStream((Integer x) -> x * 2, listToStream(1, 2))));
+        assertEquals(asList("1", "2"), collectStream(mapStream(x -> String.valueOf(x), listToStream(1, 2))));
+        assertEquals(asList(), collectStream(mapStream(x -> x, listToStream())));
+    }
+    
+    public void test_filterStream()
+    {
+        assertEquals(asList(2, 4), collectStream(filterStream((Integer x) -> x % 2 == 0, listToStream(1, 2, 3, 4))));
+        assertEquals(asList(), collectStream(filterStream(x -> true, listToStream())));
+    }
+    
+    public void test_accStream()
+    {
+        assertEquals(new Integer(10), accStream((Integer x, Integer y) -> x + y, 0, listToStream(1, 2, 3, 4)));
+        assertEquals("123", accStream((x, y) -> String.join("", String.valueOf(x), String.valueOf(y)), "", listToStream(1, 2, 3)));
+        assertEquals(new Integer(0), accStream((Integer x, Integer y) -> x + y, 0, listToStream()));
+        assertEquals(new Integer(1), accStream((Integer x, Integer y) -> x + y, 0, listToStream(1)));
+    }
+    
+    public void test_appendStream()
+    {
+        assertEquals(asList(1, 2, 3, 4), collectStream(appendStream(listToStream(1, 2), listToStream(3, 4))));
+        assertEquals(asList(3, 4), collectStream(appendStream(listToStream(), listToStream(3, 4))));
+        assertEquals(asList(1, 2), collectStream(appendStream(listToStream(1, 2), listToStream())));
+        assertEquals(asList(), collectStream(appendStream(listToStream(), listToStream())));
+    }
+    
+    public void test_enumTree()
+    {
+        assertEquals(asList(1, 2, 7, 19, 12, 14), 
+                     collectStream(enumTree(biTuple(biTuple(1, biTuple(2, 7)), 
+                                            biTuple(19, biTuple(12, 14))))));
+        
+        assertEquals(asList(1, 2, 3, 7, 19, 12, 13, 14), 
+                     collectStream(enumTree(biTuple(biTuple(1, biTuple(biTuple(2, 3), 7)), 
+                                            biTuple(19, biTuple(12, biTuple(13, 14)))))));
+    }
+    
+    public void test_enumInterval()
+    {
+        assertEquals(asList(1, 2, 3, 4), collectStream(enumInterval(1, 4)));
+        assertEquals(asList(), collectStream(enumInterval(3, 1)));
+    }
+    
+    public void test_flatten()
+    {
+        assertEquals(asList(1, 2, 3, 4, 5), collectStream(flatten(listToStream(listToStream(1, 2), 
+                                                                               listToStream(3, 4), 
+                                                                               listToStream(5)))));
+        assertEquals(asList(1, 2), collectStream(flatten(listToStream(listToStream(1, 2)))));
+        assertEquals(asList(), collectStream(flatten(listToStream())));
+    }
+    
+    public void test_flatmap()
+    {
+        assertEquals(asList(1, 2, 3, 2, 4, 6), collectStream(flatmap((Integer x) -> listToStream(x, x * 2, x * 3), listToStream(1, 2))));
+    }
+    
+    public void test_noneMatch()
+    {
+        assertTrue(noneMatch((Integer x) -> x % 2 == 0, listToStream(1, 3, 5)));
+    }
+    
+    public void test_nthStream()
+    {
+        List<Object> s = listToStream(0, 1);
+        assertEquals(new Integer(0), nthStream(0, s));
+        assertEquals(new Integer(1), nthStream(1, s));
+        
+        try
+        {
+            nthStream(2, s);
+            assertTrue(false);
+        }
+        catch(RuntimeException e)
+        {
+            assertEquals("This index does not exist.", e.getMessage());
+        }
+    }
+    
+//    public void test_printStream()
+//    {
+//        printStream(listToStream(0, 1));
+//    }
+    
+    public void test_integersFrom()
+    {
+        List<Object> s = integersFrom(2);
+        assertEquals(new Integer(2), nthStream(0, s));
+        assertEquals(new Integer(3), nthStream(1, s));
+        
+        List<Object> s2 = integersFrom(0);
+        assertEquals(asList(0, 1, 2), collectStreamLimit(3, s2));
+    }
+    
+    public void test_add()
+    {
+        assertEquals(asList(4, 6), collectStream(addStream(enumInterval(1, 2), enumInterval(3, 4))));
+        assertEquals(asList(), collectStream(addStream(theEmptyStream(), theEmptyStream())));
+        assertEquals(asList(1, 2), collectStream(addStream(enumInterval(1, 2), theEmptyStream())));
+        assertEquals(asList(3, 4), collectStream(addStream(theEmptyStream(), enumInterval(3, 4))));
+        assertEquals(asList(4, 4), collectStream(addStream(enumInterval(1, 1), enumInterval(3, 4))));
+        assertEquals(asList(4, 2), collectStream(addStream(enumInterval(1, 2), enumInterval(3, 3))));
+        
+        assertEquals(asList(3, 5, 7, 9), collectStreamLimit(4, addStream(integersFrom(1), integersFrom(2))));
+    }
+    
+    public void test_scale()
+    {
+        assertEquals(asList(2, 4), collectStream(scale(2, enumInterval(1, 2))));
+        assertEquals(asList(), collectStream(scale(2, theEmptyStream())));
+        
+        assertEquals(asList(2, 4, 6, 8), collectStreamLimit(4, scale(2, integersFrom(1))));
+    }
+    
+    public void test_ones()
+    {
+        assertEquals(asList(1, 1, 1, 1), collectStreamLimit(4, ones())); 
+    }
+    
+    public void test_integers()
+    {
+        assertEquals(asList(1, 2, 3, 4), collectStreamLimit(4, integers())); 
+    }
+    
+    public void test_fibs()
+    {
+        assertEquals(asList(0, 1, 1, 2, 3, 5), collectStreamLimit(6, fibs(0, 1)));
+        assertEquals(asList(0, 1, 1, 2, 3, 5), collectStreamLimit(6, fibs()));
+    }
+}
