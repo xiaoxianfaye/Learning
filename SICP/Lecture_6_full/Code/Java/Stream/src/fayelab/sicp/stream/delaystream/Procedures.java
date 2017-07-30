@@ -4,6 +4,7 @@ import static java.util.Arrays.asList;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
 import static fayelab.sicp.stream.delaystream.StreamOp.*;
 
@@ -61,6 +62,16 @@ public class Procedures
     private static List<Object> sieve(List<Object> s)
     {
         return consStream(head(s), () -> sieve(filterStream((Integer n) -> n % (Integer)head(s) != 0, tail(s))));
+    }
+    
+    public static List<Object> integral(List<Object> s, double init, double dt)
+    {
+        return consStream(init, () -> addDoubleStream(doubleScale(dt, s), integral(s, init, dt)));
+    }
+    
+    public static List<Object> funmaps(Function<Double, Double> func, double init, double dt)
+    {
+        return consStream(func.apply(init), () -> funmaps(func, init + dt, dt));
     }
 
     private static boolean isOdd(int n)

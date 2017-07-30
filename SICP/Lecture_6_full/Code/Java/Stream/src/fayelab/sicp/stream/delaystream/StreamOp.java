@@ -199,6 +199,61 @@ public class StreamOp
         return consStream(0, () -> consStream(1, () -> addStream(fibs(), tail(fibs()))));
     }
     
+    public static List<Object> doubleOnes()
+    {
+        return consStream(1., () -> doubleOnes());
+    }
+    
+    public static List<Object> doubles()
+    {
+        return consStream(1., () -> addDoubleStream(doubles(), doubleOnes()));
+    }
+    
+    public static List<Object> doubles(double low, double high)
+    {
+        if(low > high)
+        {
+            return theEmptyStream();
+        }
+        
+        return consStream(low, () -> doubles(low + 1., high));
+    }
+    
+    public static List<Object> doublesFrom(double d)
+    {
+        return consStream(d, () -> doublesFrom(d + 1.));
+    }
+    
+    public static List<Object> addDoubleStream(List<Object> s1, List<Object> s2)
+    {
+        if(isEmptyStream(s1) & isEmptyStream(s2))
+        {
+            return theEmptyStream();
+        }
+        
+        if(isEmptyStream(s1))
+        {
+            return s2;
+        }
+        
+        if(isEmptyStream(s2))
+        {
+            return s1;
+        }
+        
+        return consStream((Double)head(s1) + (Double)head(s2), () -> addDoubleStream(tail(s1), tail(s2)));
+    }
+    
+    public static List<Object> doubleScale(double c, List<Object> s)
+    {
+        if(isEmptyStream(s))
+        {
+            return theEmptyStream();
+        }
+        
+        return consStream(c * (Double)head(s), () -> doubleScale(c, tail(s)));
+    }
+    
     //Auxiliary methods
     @SafeVarargs
     static <T> List<Object> listToStream(T...elements)

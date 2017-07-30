@@ -114,7 +114,7 @@ public class StreamOpTest extends TestCase
         assertEquals(asList(0, 1, 2), collectStreamLimit(3, s2));
     }
     
-    public void test_add()
+    public void test_addStream()
     {
         assertEquals(asList(4, 6), collectStream(addStream(enumInterval(1, 2), enumInterval(3, 4))));
         assertEquals(asList(), collectStream(addStream(theEmptyStream(), theEmptyStream())));
@@ -148,5 +148,47 @@ public class StreamOpTest extends TestCase
     {
         assertEquals(asList(0, 1, 1, 2, 3, 5), collectStreamLimit(6, fibs(0, 1)));
         assertEquals(asList(0, 1, 1, 2, 3, 5), collectStreamLimit(6, fibs()));
+    }
+    
+    public void test_doubleOnes()
+    {
+        assertEquals(asList(1., 1., 1., 1.), collectStreamLimit(4, doubleOnes())); 
+    }
+    
+    public void test_doubles()
+    {
+        assertEquals(asList(1., 2., 3., 4.), collectStreamLimit(4, doubles())); 
+        assertEquals(asList(1., 2.), collectStreamLimit(2, doubles(1., 2.))); 
+        assertEquals(asList(3., 4.), collectStreamLimit(2, doubles(3., 5.)));
+    }
+    
+    public void test_doublesFrom()
+    {
+        List<Object> s = doublesFrom(2.);
+        assertEquals(new Double(2.), nthStream(0, s));
+        assertEquals(new Double(3.), nthStream(1, s));
+        
+        List<Object> s2 = doublesFrom(0.);
+        assertEquals(asList(0., 1., 2.), collectStreamLimit(3, s2));
+    }
+    
+    public void test_addDoubleStream()
+    {
+        assertEquals(asList(4., 6.), collectStream(addDoubleStream(doubles(1., 2.), doubles(3., 4.))));
+        assertEquals(asList(), collectStream(addDoubleStream(theEmptyStream(), theEmptyStream())));
+        assertEquals(asList(1., 2.), collectStream(addDoubleStream(doubles(1., 2.), theEmptyStream())));
+        assertEquals(asList(3., 4.), collectStream(addDoubleStream(theEmptyStream(), doubles(3., 4.))));
+        assertEquals(asList(4., 4.), collectStream(addDoubleStream(doubles(1., 1.), doubles(3., 4.))));
+        assertEquals(asList(4., 2.), collectStream(addDoubleStream(doubles(1., 2.), doubles(3., 3.))));
+        
+        assertEquals(asList(3., 5., 7., 9.), collectStreamLimit(4, addDoubleStream(doublesFrom(1.), doublesFrom(2.))));
+    }
+    
+    public void test_doubleScale()
+    {
+        assertEquals(asList(2, 4), collectStream(scale(2, enumInterval(1, 2))));
+        assertEquals(asList(), collectStream(scale(2, theEmptyStream())));
+        
+        assertEquals(asList(2, 4, 6, 8), collectStreamLimit(4, scale(2, integersFrom(1))));
     }
 }
