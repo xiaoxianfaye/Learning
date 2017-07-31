@@ -325,7 +325,7 @@ public class StreamOp
         return result;
     }
     
-    static <T> List<T> collectStreamLimit(int num, List<Object> s)
+    public static <T> List<T> collectStreamLimit(int num, List<Object> s)
     {
         List<T> result = new ArrayList<>();
         if(isEmptyStream(s))
