@@ -71,9 +71,9 @@ public class ProceduresTest extends TestCase
     {
         List<Object> idFs = funmaps(x -> x, 1., 0.001);
         List<Object> s1 = integral(idFs, 0., 0.001);
-        Double actual = (Double)nthStream(1001, s1);
-        System.out.println(actual);
-        assertTrue(Math.abs(1.5 - actual) < 0.1);
+        Double actual1 = (Double)nthStream(1001, s1);
+        System.out.println(actual1);
+        assertTrue(Math.abs(1.5 - actual1) < 0.1);
         
         List<Object> sqFs = funmaps(x -> x * x, 1., 0.001);
         List<Object> s2 = integral(sqFs, 0., 0.001);
@@ -86,5 +86,84 @@ public class ProceduresTest extends TestCase
         Double actual3 = (Double)nthStream(1001, s3);
         System.out.println(actual3);
         assertTrue(Math.abs(0.33 - actual3) < 0.1);
+    }
+    
+    public void test_integrator()
+    {
+        List<Object> s1 = integrator(x -> x, 1, 0.01);
+        Double actual1 = (Double)nthStream(101, s1);
+        System.out.println(actual1);
+        assertTrue(Math.abs(1.5 - actual1) < 0.1);
+        
+        List<Object> s2 = integrator(x -> x * x, 1, 0.01);
+        Double actual2 = (Double)nthStream(101, s2);
+        System.out.println(actual2);
+        assertTrue(Math.abs(2.33 - actual2) < 0.1);
+        
+        List<Object> s3 = integrator(x -> x * x, 0, 0.01);
+        Double actual3 = (Double)nthStream(101, s3);
+        System.out.println(actual3);
+        assertTrue(Math.abs(0.33 - actual3) < 0.1);
+    }
+    
+//    public void test_integralWithDelay()
+//    {
+//        List<Object> s = ys();
+//        Double actual = (Double)nthStream(11, s);
+//        System.out.println(actual);
+//    }
+    
+    public void test_sqrt()
+    {
+        assertTrue(Math.abs(1.414 - sqrt(2, 0.001)) < 0.001);
+        assertTrue(Math.abs(3. - sqrt(9, 0.001)) < 0.001);
+    }
+    
+    public void test_pair()
+    {
+        assertEquals(asList(asList(1, 1),
+                            asList(1, 2), asList(2, 2),
+                            asList(1, 3), asList(2, 3), asList(3, 3)),
+                     collectStreamLimit(6, pair(integersFrom(1))));
+        
+        printStreamLimit(10, pair(integersFrom(1)));
+    }
+    
+    public void test_pair2()
+    {
+        assertEquals(asList(asList(1, 1),
+                            asList(1, 2), asList(2, 2),
+                            asList(1, 3), asList(2, 3), asList(3, 3),
+                            asList(1, 4), asList(2, 4), asList(3, 4), asList(4, 4)),
+                     collectStreamLimit(10, pair(integersFrom(1), integersFrom(1))));
+    }
+    
+    public void test_allPairs()
+    {
+        assertEquals(asList(asList(1, 1),
+                            asList(1, 2),
+                            asList(2, 1),
+                            asList(2, 2),
+                            asList(1, 3), asList(2, 3),
+                            asList(3, 1), asList(3, 2),
+                            asList(3, 3),
+                            asList(1, 4), asList(2, 4), asList(3, 4),
+                            asList(4, 1), asList(4, 2), asList(4, 3),
+                            asList(4, 4)), 
+                     collectStreamLimit(16, allPairs(integersFrom(1), integersFrom(1))));
+    }
+    
+    public void test_reAllPairs()
+    {
+        assertEquals(asList(asList(1, 1), asList(1, 2), asList(2, 1), asList(1, 3),
+                            asList(2, 2), asList(1, 4), asList(3, 1), asList(1, 5)), 
+                     collectStreamLimit(8, reAllPairs(integersFrom(1), integersFrom(1))));
+    }
+    
+    public void test_upPairs()
+    {
+        assertEquals(asList(asList(1, 1), asList(1, 2), asList(2, 2), asList(1, 3), 
+                            asList(2, 3), asList(1, 4), asList(3, 3), asList(1, 5)), 
+                     collectStreamLimit(8, upPairs(integersFrom(1), integersFrom(1))));
     }
 }

@@ -107,11 +107,31 @@ public class StreamOp
         return consStream(low, () -> enumInterval(low + 1, high));
     }
     
+//    public static List<Object> flatten(List<Object> sos)
+//    {
+//        return accStream((List<Object> s1, List<Object> s2) -> appendStream(s1, s2), theEmptyStream(), sos);
+//    }
+    
     public static List<Object> flatten(List<Object> sos)
     {
-        return accStream((List<Object> s1, List<Object> s2) -> appendStream(s1, s2), theEmptyStream(), sos);
+        if(isEmptyStream(sos))
+        {
+            return theEmptyStream();
+        }
+        
+        return flatten(head(sos), tail(sos));
     }
     
+    private static List<Object> flatten(List<Object> headS, List<Object> sos)
+    {
+        if(isEmptyStream(headS))
+        {
+            return flatten(sos);
+        }
+        
+        return consStream(head(headS), () -> flatten(tail(headS), sos));
+    }
+
     public static <T> List<Object> flatmap(Function<T, List<Object>> proc, List<Object> s)
     {
         return flatten(mapStream(proc, s));
@@ -142,6 +162,24 @@ public class StreamOp
         
         System.out.println(head(s).toString());
         printStream(tail(s));        
+    }
+    
+    public static void printStreamLimit(int num, List<Object> s)
+    {
+        if(isEmptyStream(s))
+        {
+            System.out.println("Done.\n");
+            return;
+        }
+        
+        if(num == 0)
+        {
+            System.out.println("ok.\n");
+            return;
+        }
+        
+        System.out.println(head(s).toString());
+        printStreamLimit(num - 1,tail(s));
     }
     
     public static List<Object> integersFrom(int n)
