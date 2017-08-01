@@ -24,6 +24,7 @@ public class ProceduresTest extends TestCase
     public void test_enumInterval()
     {
         assertEquals(asList(2, 3, 4, 5), enumInterval(2, 5).collect(toList()));
+        assertEquals(asList(), enumInterval(3, 1).collect(toList()));
     }
     
     public void test_sumOddsSquare()

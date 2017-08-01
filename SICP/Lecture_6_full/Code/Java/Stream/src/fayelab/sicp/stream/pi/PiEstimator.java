@@ -13,10 +13,10 @@ public class PiEstimator
         return Math.sqrt(6 / monteCarlo(count, cesaro()));
     }
 
-    private static double monteCarlo(int count, BooleanSupplier cesaro)
+    private static double monteCarlo(int count, BooleanSupplier func)
     {
         long trueCount = IntStream.range(1, count + 1)
-                                  .mapToObj(c -> cesaro.getAsBoolean())
+                                  .mapToObj(c -> func.getAsBoolean())
                                   .filter(b -> b)
                                   .count();
         return 1.0 * trueCount / count;
