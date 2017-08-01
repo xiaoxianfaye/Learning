@@ -1,50 +1,47 @@
-package fayelab.sicp.stream.delaystream;
+package fayelab.sicp.stream.delaystreamclass;
 
 import java.util.List;
+import java.util.ArrayList;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
-
-import java.util.ArrayList;
 
 import static java.util.Arrays.asList;
 
 public class StreamOp
 {
     //Constructors
-    public static <T> List<Object> consStream(T head, Supplier<List<Object>> tail)
+    public static <T> Stream<T> consStream(T head, Supplier<Stream<T>> tail)
     {
-        return asList(head, tail);
+        return new Stream<>(head, tail);
     }
     
-    public static List<Object> theEmptyStream()
+    public static <T> Stream<T> theEmptyStream()
     {
-        return asList();
+        return new Stream<>(null, null);
     }
     
     //Selectors
-    @SuppressWarnings("unchecked")
-    public static <T> T head(List<Object> s)
+    public static <T> T head(Stream<T> s)
     {
-        return (T)s.get(0);
+        return s.head();
     }
     
-    @SuppressWarnings("unchecked")
-    public static List<Object> tail(List<Object> s)
+    public static <T> Stream<T> tail(Stream<T> s)
     {
-        return ((Supplier<List<Object>>)s.get(1)).get();
+        return s.tail();
     }
     
-    public static boolean isEmptyStream(List<Object> s)
+    public static <T> boolean isEmptyStream(Stream<T> s)
     {
         return s.isEmpty();
     }
     
     //Stream Operations
-    public static <T, R> List<Object> mapStream(Function<T, R> proc, List<Object> s)
+    public static <T, R> Stream<R> mapStream(Function<T, R> proc, Stream<T> s)
     {
-        if(isEmptyStream(s))
+        if(s.isEmpty())
         {
             return theEmptyStream();
         }
@@ -52,7 +49,7 @@ public class StreamOp
         return consStream(proc.apply(head(s)), () -> mapStream(proc, tail(s)));
     }
     
-    public static <T> List<Object> filterStream(Predicate<T> pred, List<Object> s)
+    public static <T> Stream<T> filterStream(Predicate<T> pred, Stream<T> s)
     {
         if(isEmptyStream(s))
         {
@@ -67,7 +64,7 @@ public class StreamOp
         return filterStream(pred, tail(s));
     }
     
-    public static <T, R> R accStream(BiFunction<T, R, R> proc, R acc, List<Object> s)
+    public static <T, R> R accStream(BiFunction<T, R, R> proc, R acc, Stream<T> s)
     {
         if(isEmptyStream(s))
         {
@@ -77,7 +74,7 @@ public class StreamOp
         return proc.apply(head(s), accStream(proc, acc, tail(s)));
     }
     
-    public static List<Object> appendStream(List<Object> s1, List<Object> s2)
+    public static <T> Stream<T> appendStream(Stream<T> s1, Stream<T> s2)
     {
         if(isEmptyStream(s1))
         {
@@ -87,7 +84,8 @@ public class StreamOp
         return consStream(head(s1), () -> appendStream(tail(s1), s2));
     }
     
-    public static List<Object> enumTree(Object obj)
+    @SuppressWarnings("unchecked")
+    public static <T> Stream<T> enumTree(Object obj)
     {
         if(obj instanceof BiTuple)
         {
@@ -95,10 +93,10 @@ public class StreamOp
             return appendStream(enumTree(biTuple.getElement1()), enumTree(biTuple.getElement2()));
         }
         
-        return consStream(obj, () -> theEmptyStream());
+        return consStream((T)obj, () -> theEmptyStream());
     }
     
-    public static List<Object> enumInterval(int low, int high)
+    public static Stream<Integer> enumInterval(int low, int high)
     {
         if(low > high)
         {
@@ -108,12 +106,12 @@ public class StreamOp
         return consStream(low, () -> enumInterval(low + 1, high));
     }
     
-//    public static List<Object> flatten(List<Object> sos)
+//    public static <T> Stream<T> flatten(Stream<Stream<T>> sos)
 //    {
-//        return accStream((List<Object> s1, List<Object> s2) -> appendStream(s1, s2), theEmptyStream(), sos);
+//        return accStream((s1, s2) -> appendStream(s1, s2), theEmptyStream(), sos);
 //    }
     
-    public static List<Object> flatten(List<Object> sos)
+    public static <T> Stream<T> flatten(Stream<Stream<T>> sos)
     {
         if(isEmptyStream(sos))
         {
@@ -123,7 +121,7 @@ public class StreamOp
         return flatten(head(sos), tail(sos));
     }
     
-    private static List<Object> flatten(List<Object> headS, List<Object> sos)
+    private static <T> Stream<T> flatten(Stream<T> headS, Stream<Stream<T>> sos)
     {
         if(isEmptyStream(headS))
         {
@@ -133,17 +131,17 @@ public class StreamOp
         return consStream(head(headS), () -> flatten(tail(headS), sos));
     }
 
-    public static <T> List<Object> flatmap(Function<T, List<Object>> proc, List<Object> s)
+    public static <T, R> Stream<R> flatmap(Function<T, Stream<R>> proc, Stream<T> s)
     {
         return flatten(mapStream(proc, s));
     }
     
-    public static <T> boolean noneMatch(Predicate<T> pred, List<Object> s)
+    public static <T> boolean noneMatch(Predicate<T> pred, Stream<T> s)
     {
         return isEmptyStream(filterStream(pred, s));
     }
     
-    public static Object nthStream(int index, List<Object> s)
+    public static <T> T nthStream(int index, Stream<T> s)
     {
         if(isEmptyStream(s))
         {
@@ -153,7 +151,7 @@ public class StreamOp
         return index == 0 ? head(s) : nthStream(index - 1, tail(s));
     }
     
-    public static void printStream(List<Object> s)
+    public static <T> void printStream(Stream<T> s)
     {
         if(isEmptyStream(s))
         {
@@ -165,7 +163,7 @@ public class StreamOp
         printStream(tail(s));        
     }
     
-    public static void printStreamLimit(int num, List<Object> s)
+    public static <T> void printStreamLimit(int num, Stream<T> s)
     {
         if(isEmptyStream(s))
         {
@@ -183,12 +181,12 @@ public class StreamOp
         printStreamLimit(num - 1,tail(s));
     }
     
-    public static List<Object> integersFrom(int n)
+    public static Stream<Integer> integersFrom(int n)
     {
         return consStream(n, () -> integersFrom(n + 1));
     }
     
-    public static List<Object> addStream(List<Object> s1, List<Object> s2)
+    public static Stream<Integer> addStream(Stream<Integer> s1, Stream<Integer> s2)
     {
         if(isEmptyStream(s1) & isEmptyStream(s2))
         {
@@ -205,10 +203,10 @@ public class StreamOp
             return s1;
         }
         
-        return consStream((Integer)head(s1) + (Integer)head(s2), () -> addStream(tail(s1), tail(s2)));
+        return consStream(head(s1) + head(s2), () -> addStream(tail(s1), tail(s2)));
     }
     
-    public static List<Object> scale(int c, List<Object> s)
+    public static Stream<Integer> scale(int c, Stream<Integer> s)
     {
         if(isEmptyStream(s))
         {
@@ -218,37 +216,37 @@ public class StreamOp
         return consStream(c * (Integer)head(s), () -> scale(c, tail(s)));
     }
     
-    public static List<Object> ones()
+    public static Stream<Integer> ones()
     {
         return consStream(1, () -> ones());
     }
     
-    public static List<Object> integers()
+    public static Stream<Integer> integers()
     {
         return consStream(1, () -> addStream(integers(), ones()));
     }
     
-    public static List<Object> fibs(int n1, int n2)
+    public static Stream<Integer> fibs(int n1, int n2)
     {
         return consStream(n1, () -> fibs(n2, n1 + n2));
     }
     
-    public static List<Object> fibs()
+    public static Stream<Integer> fibs()
     {
         return consStream(0, () -> consStream(1, () -> addStream(fibs(), tail(fibs()))));
     }
     
-    public static List<Object> doubleOnes()
+    public static Stream<Double> doubleOnes()
     {
         return consStream(1., () -> doubleOnes());
     }
     
-    public static List<Object> doubles()
+    public static Stream<Double> doubles()
     {
         return consStream(1., () -> addDoubleStream(doubles(), doubleOnes()));
     }
     
-    public static List<Object> doubles(double low, double high)
+    public static Stream<Double> doubles(double low, double high)
     {
         if(low > high)
         {
@@ -258,12 +256,12 @@ public class StreamOp
         return consStream(low, () -> doubles(low + 1., high));
     }
     
-    public static List<Object> doublesFrom(double d)
+    public static Stream<Double> doublesFrom(double d)
     {
         return consStream(d, () -> doublesFrom(d + 1.));
     }
     
-    public static List<Object> addDoubleStream(List<Object> s1, List<Object> s2)
+    public static Stream<Double> addDoubleStream(Stream<Double> s1, Stream<Double> s2)
     {
         if(isEmptyStream(s1) & isEmptyStream(s2))
         {
@@ -280,10 +278,10 @@ public class StreamOp
             return s1;
         }
         
-        return consStream((Double)head(s1) + (Double)head(s2), () -> addDoubleStream(tail(s1), tail(s2)));
+        return consStream(head(s1) + head(s2), () -> addDoubleStream(tail(s1), tail(s2)));
     }
     
-    public static List<Object> doubleScale(double c, List<Object> s)
+    public static Stream<Double> doubleScale(double c, Stream<Double> s)
     {
         if(isEmptyStream(s))
         {
@@ -295,12 +293,12 @@ public class StreamOp
     
     //Auxiliary methods
     @SafeVarargs
-    static <T> List<Object> listToStream(T...elements)
+    static <T> Stream<T> listToStream(T...elements)
     {
         return listToStream(new ArrayList<>(asList(elements)));
     }
     
-    private static <T> List<Object> listToStream(List<T> list)
+    private static <T> Stream<T> listToStream(List<T> list)
     {
         if(list.isEmpty())
         {
@@ -311,22 +309,22 @@ public class StreamOp
         return consStream(head, () -> listToStream(list));
     }
     
-    static <T> List<T> collectStream(List<Object> s)
+    static <T> List<T> collectStream(Stream<T> s)
     {
         List<T> result = new ArrayList<>();
         
-        if(isEmptyStream(s))
+        if(s.isEmpty())
         {
             return result;
         }
         
-        result.add(head(s));
-        result.addAll(collectStream(tail(s)));
+        result.add(s.head());
+        result.addAll(collectStream(s.tail()));
         
         return result;
     }
     
-    public static <T> List<T> collectStreamLimit(int num, List<Object> s)
+    public static <T> List<T> collectStreamLimit(int num, Stream<T> s)
     {
         List<T> result = new ArrayList<>();
         if(isEmptyStream(s))
@@ -338,7 +336,7 @@ public class StreamOp
         return result;        
     }
     
-    private static <T> void collectStreamLimit(int num, List<Object> s, List<T> result)
+    private static <T> void collectStreamLimit(int num, Stream<T> s, List<T> result)
     {
         if(num == 0)
         {
@@ -375,4 +373,37 @@ public class StreamOp
             return element2;
         }
     }
+}
+
+class Stream<T>
+{
+    private T head;
+    private Supplier<Stream<T>> tail;
+
+    public Stream(T head, Supplier<Stream<T>> tail)
+    {
+        this.head = head;
+        this.tail = tail;
+    }
+    
+    public T head()
+    {
+        return head;
+    }
+
+    public Stream<T> tail()
+    {
+        return tail.get();
+    }
+
+    public boolean isEmpty()
+    {
+        return null == head && null == tail;
+    }
+    
+//    @Override
+//    public String toString()
+//    {
+//        return String.join(", ", head.toString(), tail.toString());
+//    }
 }

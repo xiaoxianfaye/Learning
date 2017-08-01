@@ -1,13 +1,11 @@
-package fayelab.sicp.stream.delaystream;
+package fayelab.sicp.stream.delaystreamclass;
 
 import junit.framework.TestCase;
 
 import static java.util.Arrays.asList;
 
-import java.util.List;
-
-import static fayelab.sicp.stream.delaystream.StreamOp.*;
-import static fayelab.sicp.stream.delaystream.Procedures.*;
+import static fayelab.sicp.stream.delaystreamclass.Procedures.*;
+import static fayelab.sicp.stream.delaystreamclass.StreamOp.*;
 
 public class ProceduresTest extends TestCase
 {
@@ -44,7 +42,7 @@ public class ProceduresTest extends TestCase
     
     public void test_noSevens()
     {
-        List<Object> s = noSevens();
+        Stream<Integer> s = noSevens();
         assertEquals(new Integer(1), nthStream(0, s));
         assertEquals(new Integer(8), nthStream(6, s));
         assertEquals(new Integer(16), nthStream(13, s));
@@ -54,7 +52,7 @@ public class ProceduresTest extends TestCase
     
     public void test_primes()
     {
-        assertEquals(asList(2, 3, 5, 7, 11, 13, 17, 19, 23, 29),  collectStreamLimit(10, primes()));
+        assertEquals(asList(2, 3, 5, 7, 11, 13, 17, 19, 23, 29), collectStreamLimit(10, primes()));
     }
     
     public void test_integral()
@@ -69,49 +67,49 @@ public class ProceduresTest extends TestCase
     
     public void test_funmaps_integral()
     {
-        List<Object> idFs = funmaps(x -> x, 1., 0.001);
-        List<Object> s1 = integral(idFs, 0., 0.001);
-        Double actual1 = (Double)nthStream(1001, s1);
+        Stream<Double> idFs = funmaps(x -> x, 1., 0.001);
+        Stream<Double> s1 = integral(idFs, 0., 0.001);
+        double actual1 = nthStream(1001, s1);
         System.out.println(actual1);
         assertTrue(Math.abs(1.5 - actual1) < 0.1);
         
-        List<Object> sqFs = funmaps(x -> x * x, 1., 0.001);
-        List<Object> s2 = integral(sqFs, 0., 0.001);
-        Double actual2 = (Double)nthStream(1001, s2);
+        Stream<Double> sqFs = funmaps(x -> x * x, 1., 0.001);
+        Stream<Double> s2 = integral(sqFs, 0., 0.001);
+        double actual2 = nthStream(1001, s2);
         System.out.println(actual2);
         assertTrue(Math.abs(2.33 - actual2) < 0.1);
         
-        List<Object> sqFs2 = funmaps(x -> x * x, 0., 0.001);
-        List<Object> s3 = integral(sqFs2, 0., 0.001);
-        Double actual3 = (Double)nthStream(1001, s3);
+        Stream<Double> sqFs2 = funmaps(x -> x * x, 0., 0.001);
+        Stream<Double> s3 = integral(sqFs2, 0., 0.001);
+        double actual3 = nthStream(1001, s3);
         System.out.println(actual3);
         assertTrue(Math.abs(0.33 - actual3) < 0.1);
     }
     
     public void test_integrator()
     {
-        List<Object> s1 = integrator(x -> x, 1, 0.01);
-        Double actual1 = (Double)nthStream(101, s1);
+        Stream<Double> s1 = integrator(x -> x, 1, 0.01);
+        double actual1 = nthStream(101, s1);
         System.out.println(actual1);
         assertTrue(Math.abs(1.5 - actual1) < 0.1);
         
-        List<Object> s2 = integrator(x -> x * x, 1, 0.01);
-        Double actual2 = (Double)nthStream(101, s2);
+        Stream<Double> s2 = integrator(x -> x * x, 1, 0.01);
+        double actual2 = nthStream(101, s2);
         System.out.println(actual2);
         assertTrue(Math.abs(2.33 - actual2) < 0.1);
         
-        List<Object> s3 = integrator(x -> x * x, 0, 0.01);
-        Double actual3 = (Double)nthStream(101, s3);
+        Stream<Double> s3 = integrator(x -> x * x, 0, 0.01);
+        double actual3 = nthStream(101, s3);
         System.out.println(actual3);
         assertTrue(Math.abs(0.33 - actual3) < 0.1);
     }
     
-//    public void test_integralWithDelay()
-//    {
-//        List<Object> s = ys();
-//        Double actual = (Double)nthStream(11, s);
-//        System.out.println(actual);
-//    }
+    public void test_integralWithDelay()
+    {
+        Stream<Double> s = ys();
+        double actual = nthStream(11, s);
+        System.out.println(actual);
+    }
     
     public void test_sqrt()
     {
