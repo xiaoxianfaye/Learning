@@ -120,7 +120,17 @@ public class StreamOp
     
     public static <T> boolean noneMatch(Predicate<T> pred, List<T> s)
     {
-        return filterStream(pred, s).size() == 0;
+        if(isEmptyStream(s))
+        {
+            return true;
+        }
+        
+        if(pred.test(head(s)))
+        {
+            return false;
+        }
+        
+        return noneMatch(pred, tail(s));
     }
     
     public static <T1, T2> BiTuple<T1, T2> biTuple(T1 element1, T2 element2)

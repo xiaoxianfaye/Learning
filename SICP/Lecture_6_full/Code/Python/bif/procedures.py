@@ -1,38 +1,17 @@
 ## Procedures with built-in functions
-def sum_odds_square(obj):
-    if isinstance(obj, tuple):
-        return sum_odds_square(obj[0]) + sum_odds_square(obj[1])
-
-    return square(obj) if isodd(obj) else 0
+def sum_odds_square(biTree):
+    return reduce(lambda x, y: x + y, 
+                  map(lambda x: square(x), filter(lambda x: isodd(x), enum_tree(biTree))), 
+                  0)
 
 def odd_fibs(n):
-    result = []
-    
-    for i in range(0, n + 1):
-        if isodd(fib(i)):
-            result.append(i)
-    
-    return result
+    return [idx for idx in enum_interval(0, n) if isodd(fib(idx))]
 
 def prime_sum_pairs(n):
-    result = []
-
-    for i in range(2, n + 1):
-        for j in range(1, i):
-            if isprime(i + j):
-                result.append((i, j))
-
-    return result
+    return [(i, j) for i in enum_interval(2, n) for j in enum_interval(1, i - 1) if isprime(i + j)]
 
 def triples(n):
-    result = []
-
-    for i in range(3, n + 1):
-        for j in range(2, i):
-            for k in range(1, j):
-                result.append((i, j, k))
-
-    return result
+    return [(i, j, k) for i in enum_interval(3, n) for j in enum_interval(2, i - 1) for k in enum_interval(1, j - 1)]
 
 def enum_tree(obj):
     result = []
@@ -62,10 +41,7 @@ def fib(n):
     return fib(n - 1) + fib(n - 2)
 
 def isprime(n):
-    for i in range(2, n):
-        if n % i == 0:
-            return False
-    return True
+    return all(map(lambda x: n % x != 0, range(2, n)))
 
 ## Tests
 def test_enum_tree():
@@ -91,20 +67,20 @@ def test_prime_sum_pairs():
     print 'test_prime_sum_pairs ok'
 
 def test_triples():
-    assert [(3, 2, 1),  
-            (4, 2, 1), (4, 3, 1), (4, 3, 2), 
+    assert [(3, 2, 1),
+            (4, 2, 1), (4, 3, 1), (4, 3, 2),
             (5, 2, 1), (5, 3, 1), (5, 3, 2), (5, 4, 1), (5, 4, 2), (5, 4, 3)] == triples(5)
     print 'test_triples ok'
 
 def test():
     test_enum_tree()
     test_enum_interval()
-
-    # test_sum_odds_square()
-    # test_odd_fibs()
-    # test_prime_sum_pairs()
-    # test_triples()
+    test_sum_odds_square()
+    test_odd_fibs()
+    test_prime_sum_pairs()
+    test_triples()
 
     print 'test ok'
 
-test()
+if __name__ == '__main__':
+    test()

@@ -140,7 +140,17 @@ public class StreamOp
     
     public static <T> boolean noneMatch(Predicate<T> pred, List<Object> s)
     {
-        return isEmptyStream(filterStream(pred, s));
+        if(isEmptyStream(s))
+        {
+            return true;
+        }
+        
+        if(pred.test(head(s)))
+        {
+            return false;
+        }
+        
+        return noneMatch(pred, tail(s));
     }
     
     public static Object nthStream(int index, List<Object> s)

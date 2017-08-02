@@ -40,10 +40,9 @@ public class Procedures
     {
         List<Integer> result = new ArrayList<>();
         
-        enumInterval(0, n).map(idx -> asList(idx, fib(idx)))
-                          .filter(idxAndFib -> isOdd(idxAndFib.get(1)))
-                          .collect(() -> result, 
-                                   (acc, idxAndFib) -> acc.add(idxAndFib.get(0)),
+        enumInterval(0, n).filter(idx -> isOdd(fib(idx)))
+                          .collect(() -> result,
+                                   (acc, idx) -> acc.add(idx),
                                    (acc1, acc2) -> acc1.addAll(acc2));
 
         return result;

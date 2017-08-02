@@ -82,4 +82,5 @@ def test():
 
     print 'test ok'
 
-test()
+if __name__ == '__main__':
+    test()

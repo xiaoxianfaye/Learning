@@ -72,11 +72,14 @@ public class StreamOpTest extends TestCase
     public void test_flatmap()
     {
         assertEquals(asList(1, 2, 3, 2, 4, 6), collectStream(flatmap(x -> listToStream(x, x * 2, x * 3), listToStream(1, 2))));
+        assertEquals(asList(), collectStream(flatmap(x -> listToStream(x), listToStream())));
     }
     
     public void test_noneMatch()
     {
         assertTrue(noneMatch(x -> x % 2 == 0, listToStream(1, 3, 5)));
+        assertTrue(noneMatch(x -> true, listToStream()));
+        assertTrue(noneMatch(x -> false, listToStream()));
     }
     
     public void test_nthStream()

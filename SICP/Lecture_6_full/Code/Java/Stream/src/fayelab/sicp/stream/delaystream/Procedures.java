@@ -22,11 +22,10 @@ public class Procedures
     
     public static List<Integer> oddFibs(int n)
     {
-        return accStream((List<Integer> idxAndFib, List<Integer> acc) -> glue(idxAndFib.get(0), acc), 
+        return accStream((idx, acc) -> glue(idx, acc), 
                          new ArrayList<>(),
-                         filterStream((List<Integer> idxAndFib) -> isOdd(idxAndFib.get(1)),
-                                      mapStream((Integer idx) -> asList(idx, fib(idx)),
-                                                enumInterval(0, n))));
+                         filterStream((Integer idx) -> isOdd(fib(idx)),
+                                      enumInterval(0, n)));
     }
     
     public static List<List<Integer>> primeSumPairs(int n)
