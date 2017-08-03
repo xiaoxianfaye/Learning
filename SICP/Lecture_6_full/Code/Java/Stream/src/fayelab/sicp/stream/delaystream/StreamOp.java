@@ -190,7 +190,7 @@ public class StreamOp
         }
         
         System.out.println(head(s).toString());
-        printStreamLimit(num - 1,tail(s));
+        printStreamLimit(num - 1, tail(s));
     }
     
     public static List<Object> integersFrom(int n)
@@ -336,21 +336,21 @@ public class StreamOp
         return result;
     }
     
-    public static <T> List<T> collectStreamLimit(int num, List<Object> s)
+    static <T> List<T> collectStreamLimit(int num, List<Object> s)
     {
         List<T> result = new ArrayList<>();
-        if(isEmptyStream(s))
-        {
-            return result;
-        }
-        
         collectStreamLimit(num, s, result);
         return result;        
     }
     
     private static <T> void collectStreamLimit(int num, List<Object> s, List<T> result)
     {
-        if(num == 0)
+        if(isEmptyStream(s))
+        {
+            return;
+        }
+        
+        if(num <= 0)
         {
             return;
         }

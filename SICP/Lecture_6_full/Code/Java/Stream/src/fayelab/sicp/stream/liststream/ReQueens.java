@@ -19,9 +19,7 @@ public class ReQueens
     {
         if(row == 0)
         {
-            List<List<List<Integer>>> emptyList = new ArrayList<>();
-            emptyList.add(emptyBoard());
-            return emptyList;
+            return consStream(emptyBoard(), theEmptyStream());
         }
         
         return filterStream((List<List<Integer>> poses) -> isSafe(poses), 
@@ -40,9 +38,7 @@ public class ReQueens
     {
         if(row == 0)
         {
-            List<List<List<Integer>>> emptyList = new ArrayList<>();
-            emptyList.add(emptyBoard());
-            return emptyList;
+            return consStream(emptyBoard(), theEmptyStream());
         }
         
         return filterStream((List<List<Integer>> poses) -> isSafe(poses), 
@@ -72,14 +68,13 @@ public class ReQueens
 
     private static boolean isNotSameCol(List<Integer> newPos, List<List<Integer>> restPoses)
     {
-        return restPoses.stream()
-                        .noneMatch(restPos -> newPos.get(1) == restPos.get(1));
+        return noneMatch(restPos -> newPos.get(1) == restPos.get(1), restPoses);
     }
 
     private static boolean isNotDiagonal(List<Integer> newPos, List<List<Integer>> restPoses)
     {
-        return restPoses.stream()
-                        .noneMatch(restPos -> Math.abs(newPos.get(0) - restPos.get(0)) 
-                                                == Math.abs(newPos.get(1) - restPos.get(1)));
+        return noneMatch(restPos -> Math.abs(newPos.get(0) - restPos.get(0)) 
+                                        == Math.abs(newPos.get(1) - restPos.get(1)),
+                         restPoses);
     }
 }

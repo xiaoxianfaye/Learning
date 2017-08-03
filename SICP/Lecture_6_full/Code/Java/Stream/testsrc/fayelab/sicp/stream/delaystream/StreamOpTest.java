@@ -115,6 +115,9 @@ public class StreamOpTest extends TestCase
         
         List<Object> s2 = integersFrom(0);
         assertEquals(asList(0, 1, 2), collectStreamLimit(3, s2));
+        assertEquals(asList(), collectStreamLimit(-1, s2));
+        
+        assertEquals(asList(), collectStreamLimit(-1, theEmptyStream()));
     }
     
     public void test_addStream()
@@ -150,6 +153,8 @@ public class StreamOpTest extends TestCase
     public void test_fibs()
     {
         assertEquals(asList(0, 1, 1, 2, 3, 5), collectStreamLimit(6, fibs(0, 1)));
+        assertEquals(asList(1, 2, 3, 5, 8, 13), collectStreamLimit(6, fibs(1, 2)));
+       
         assertEquals(asList(0, 1, 1, 2, 3, 5), collectStreamLimit(6, fibs()));
     }
     

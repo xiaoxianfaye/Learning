@@ -1,31 +1,31 @@
 ## Procedures with list stream
-import stream as sop
+from stream import *
 
 def sum_odds_square(biTree):
-    return sop.acc_stream(lambda x, y: x + y, 
-                          0,
-                          sop.map_stream(lambda x: square(x), 
-                                         sop.filter_stream(lambda x: isodd(x), 
-                                                           sop.enum_tree(biTree))))
+    return acc_stream(lambda x, y: x + y, 
+                      0,
+                      map_stream(lambda x: square(x), 
+                                 filter_stream(lambda x: isodd(x), 
+                                               enum_tree(biTree))))
                   
 
 def odd_fibs(n):
-    return sop.acc_stream(lambda idx, acc: [idx] + acc, 
-                          [], 
-                          sop.filter_stream(lambda idx: isodd(fib(idx)), 
-                                            sop.enum_interval(0, n)))
+    return acc_stream(lambda idx, acc: [idx] + acc, 
+                      [], 
+                      filter_stream(lambda idx: isodd(fib(idx)), 
+                                    enum_interval(0, n)))
 
 def prime_sum_pairs(n):
-    return sop.filter_stream(lambda pair: isprime(pair[0] + pair[1]),
-                             sop.flatmap(lambda i: sop.map_stream(lambda j: (i, j), sop.enum_interval(1, i - 1)),
-                                         sop.enum_interval(2, n)))
+    return filter_stream(lambda pair: isprime(pair[0] + pair[1]),
+                         flatmap(lambda i: map_stream(lambda j: (i, j), enum_interval(1, i - 1)),
+                                 enum_interval(2, n)))
 
 
 def triples(n):
-    return sop.flatmap(lambda i: sop.flatmap(lambda j: sop.map_stream(lambda k: (i, j, k), 
-                                                                      sop.enum_interval(1, j - 1)), 
-                                             sop.enum_interval(2, i - 1)),
-                       sop.enum_interval(3, n))
+    return flatmap(lambda i: flatmap(lambda j: map_stream(lambda k: (i, j, k), 
+                                                          enum_interval(1, j - 1)), 
+                                     enum_interval(2, i - 1)),
+                   enum_interval(3, n))
 
 ## Auxiliary functions
 def isodd(n):
