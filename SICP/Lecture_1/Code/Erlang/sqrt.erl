@@ -4,14 +4,14 @@
 -define(TOLERANCE, 0.001).
 
 sqrt(X) -> 
-    my_try(1, X).
+    try_once(1, X).
 
-my_try(Guess, X) ->
+try_once(Guess, X) ->
     case good_enough(Guess, X) of
         true ->
             Guess;
         false ->
-            my_try(improve(Guess, X), X)
+            try_once(improve(Guess, X), X)
     end.
 
 good_enough(Guess, X) ->

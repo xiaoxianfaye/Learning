@@ -6,17 +6,17 @@
 fixedpoint(F) ->
     fun(Guess) ->
         fun(X) ->
-            my_try(Guess, F, X)
+            try_once(Guess, F, X)
         end
     end.
 
-my_try(Guess, F, X) ->
+try_once(Guess, F, X) ->
     NextGuess = (F(Guess))(X),
     case good_enough(NextGuess, Guess) of
         true ->
             NextGuess;
         false ->
-            my_try(NextGuess, F, X)
+            try_once(NextGuess, F, X)
     end.
 
 good_enough(NextGuess, Guess) ->

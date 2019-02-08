@@ -4,15 +4,15 @@
 -define(TOLERANCE, 0.001).
 
 sqrt(X) ->
-    my_try(1, X).
+    try_once(1, X).
 
-my_try(Guess, X) ->
+try_once(Guess, X) ->
     NextGuess = average(Guess, X / Guess),
     case good_enough(NextGuess, Guess) of
         true ->
             NextGuess;
         false ->
-            my_try(NextGuess, X)
+            try_once(NextGuess, X)
     end.
 
 good_enough(NextGuess, Guess) ->
