@@ -120,7 +120,7 @@ even_odd_mover(_N, From, To, Spare) ->
 
 spike_substep(Cur) -> spike_substep(Cur, 0).
 
-spike_substep(Cur, N) when Cur rem 2 =/= 1 ->
+spike_substep(Cur, N) when Cur rem 2 =/= 0 ->
     {N + 1, ((Cur + 1) div 2) rem 3};
 spike_substep(Cur, N) ->
     spike_substep(Cur div 2, N + 1).
