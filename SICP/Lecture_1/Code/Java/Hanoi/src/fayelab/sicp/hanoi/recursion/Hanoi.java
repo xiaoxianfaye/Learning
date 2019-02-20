@@ -1,4 +1,4 @@
-package fayelab.sicp.hanoi.recursive;
+package fayelab.sicp.hanoi.recursion;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,15 +14,15 @@ public class Hanoi
         {
             return;
         }
-        
+
         run(n - 1, from, spare, to);
         move(n, from, to);
         run(n - 1, spare, to, from);
     }
 
-    private static void move(int num, String from, String to)
+    private static void move(int diskNo, String from, String to)
     {
-        System.out.println(String.format("%d: %s -> %s", num, from, to));        
+        System.out.println(String.format("%d: %s -> %s", diskNo, from, to));
     }
 
     public static void run2(int n, String from, String to, String spare)
@@ -51,12 +51,12 @@ public class Hanoi
         genMovingSeq(n - 1, spare, to, from, result);
     }
 
-    private static void move(int nth, String from, String to, List<List<String>> acc)
+    private static void move(int diskNo, String from, String to, List<List<String>> result)
     {
-        acc.add(asList(String.valueOf(nth), from, to));
+        result.add(asList(String.valueOf(diskNo), from, to));
     }
 
-    private static List<String> formatMovingSeq(List<List<String>> movingSeq)
+    static List<String> formatMovingSeq(List<List<String>> movingSeq)
     {
         return movingSeq.stream()
                         .map((List<String> movingStep) -> String.format("%s: %s -> %s", movingStep.get(0), movingStep.get(1), movingStep.get(2)))
@@ -68,5 +68,7 @@ public class Hanoi
         Hanoi.run(3, "F", "T", "S");
         System.out.println();
         Hanoi.run2(3, "F", "T", "S");
+        System.out.println();
+        Hanoi.run2(4, "F", "T", "S");
     }
 }
