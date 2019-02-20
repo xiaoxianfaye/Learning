@@ -25,3 +25,5 @@ def format_moving_seq(moving_seq):
 
 if __name__ == '__main__':
     run(3, 'from', 'to', 'spare')
+    print
+    run(4, 'from', 'to', 'spare')
