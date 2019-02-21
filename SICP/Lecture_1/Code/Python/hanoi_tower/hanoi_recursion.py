@@ -17,8 +17,8 @@ def _gen_moving_seq(n, src, dest, spare, result):
     move(n, src, dest, result)
     _gen_moving_seq(n - 1, spare, dest, src, result)
 
-def move(nth, src, dest, result):
-    result.append([nth, src, dest])
+def move(disk_no, src, dest, result):
+    result.append([disk_no, src, dest])
 
 def format_moving_seq(moving_seq):
     return map(lambda moving_step: '%d: %s -> %s' % (moving_step[0], moving_step[1], moving_step[2]), moving_seq)
