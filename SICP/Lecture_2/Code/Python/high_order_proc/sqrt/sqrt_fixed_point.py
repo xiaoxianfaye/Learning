@@ -22,9 +22,7 @@ def average(x, y):
     return (x + y) / 2.0
 
 def sqrt2(x):
-    func = average_damp(lambda y: x / y)
-    sqrt_func = (fixed_point(func))(1.0)
-    return sqrt_func(x)
+    return fixed_point(average_damp(lambda y: x / y), 1.0)
 
 def average_damp(func):
     return lambda y: average(y, func(y))

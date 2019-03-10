@@ -1,6 +1,6 @@
 import unittest
 
-from sum.sum_using_hoproc import *
+from high_order_proc.sum.sum_using_hoproc import *
 
 class TestSumUsingHoproc(unittest.TestCase):
     def test_sum_primitive(self):
