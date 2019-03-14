@@ -13,7 +13,7 @@ add_vector(P1, P2) ->
 
 sub_vector(P1, P2) ->
     make_vector(xcor(P1) - xcor(P2), ycor(P1) - ycor(P2)).
-    
+
 scale_vector(Scale, P) ->
     make_vector(Scale * xcor(P), Scale * ycor(P)).
 
@@ -53,8 +53,8 @@ draw(Segs, FileName) ->
     Color = egd:color({0, 0, 255}),
     lists:foreach(fun(Seg) ->
                     egd:line(
-                        Image, 
-                        vector_to_point(seg_start(Seg)), 
+                        Image,
+                        vector_to_point(seg_start(Seg)),
                         vector_to_point(seg_end(Seg)), Color)
                   end, Segs),
     egd:save(egd:render(Image, png), FileName),
@@ -83,6 +83,16 @@ beside(P1, P2, Ratio) ->
     end.
 
 % beside(P1, P2, Ratio) ->
+%     TransP1 = transform_painter(P1, make_vector(0, 0), make_vector(Ratio, 0), make_vector(0, 1)),
+%     TransP2 = transform_painter(P2, make_vector(Ratio, 0), make_vector(1, 0), make_vector(Ratio, 1)),
+%     fun(Frame) ->
+%         fun(Draw) ->
+%             (TransP1(Frame))(Draw),
+%             (TransP2(Frame))(Draw)
+%         end
+%     end.
+
+% beside(P1, P2, Ratio) ->
 %     fun(Frame) ->
 %         CMSegs1 = P1(make_frame(
 %                         origin(Frame),
@@ -108,11 +118,25 @@ empty() ->
     end.
 
 % anti-clockwise
+% rotate_90(P) ->
+%     fun(Frame) ->
+%         TransP = transform_painter(P, make_vector(0, 1), make_vector(0, 0), make_vector(1, 1)),
+%         TransP(Frame)
+%     end.
+
 rotate_90(P) ->
-    transform_painter(P, make_vector(0, 1), make_vector(0, 0), make_vector(1, 1)).
+    RP = transform_painter(P, make_vector(0, 1), make_vector(0, 0), make_vector(1, 1)),
+    fun(Frame) ->
+        fun(Draw) ->
+            (RP(Frame))(Draw)
+        end
+    end.
+
+% rotate_90(P) ->
+%     transform_painter(P, make_vector(0, 1), make_vector(0, 0), make_vector(1, 1)).
 
 flip_horiz(P) ->
-    transform_painter(P, make_vector(0, 1), make_vector(1, 1), make_vector(0, 0)).    
+    transform_painter(P, make_vector(0, 1), make_vector(1, 1), make_vector(0, 0)).
 
 flip_vert(P) ->
     transform_painter(P, make_vector(1, 0), make_vector(0, 0), make_vector(1, 1)).
@@ -263,7 +287,7 @@ test_beside() ->
     Painter1 = make_painter(segs()),
     [[[0|0],150|0], [[0|0],75|300], [[75|300],150|0],
      [[150|600],225|300], [[150|600],300|600], [[225|300],300|600],
-     [[75|300],225|300], 
+     [[75|300],225|300],
      [[300|0],450|0], [[300|0],375|300], [[375|300],450|0],
      [[450|600],525|300], [[450|600],600|600], [[525|300],600|600],
      [[375|300],525|300]] = (beside(Painter1, Painter1, 0.5))(Frame1),
@@ -273,7 +297,7 @@ test_beside() ->
     [[[50|50],138|75], [[50|50],194|288], [[194|288],138|75],
      [[338|525],281|313], [[338|525],425|550], [[281|313],425|550],
      [[194|288],281|313],
-     [[225|100],313|125], [[225|100],369|338], [[369|338],313|125], 
+     [[225|100],313|125], [[225|100],369|338], [[369|338],313|125],
      [[513|575],456|363], [[513|575],600|600], [[456|363],600|600],
      [[369|338],456|363]] = (beside(Painter2, Painter2, 0.5))(Frame2),
 

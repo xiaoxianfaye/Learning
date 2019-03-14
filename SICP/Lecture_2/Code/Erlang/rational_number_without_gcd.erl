@@ -7,11 +7,11 @@ numer(R) -> hd(R).
 denom(R) -> tl(R).
 
 '+rat'(X, Y) ->
-    make_rat(numer(X) * denom(Y) + denom(X) * numer(Y), 
+    make_rat(numer(X) * denom(Y) + denom(X) * numer(Y),
              denom(X) * denom(Y)).
 
 '*rat'(X, Y) ->
-    make_rat(numer(X) * numer(Y), 
+    make_rat(numer(X) * numer(Y),
              denom(X) * denom(Y)).
 
 % using_rat() ->

@@ -25,9 +25,9 @@ average_damp(F) ->
     fun(Y) ->
         average(Y, F(Y))
     end.
-    
+
 newton(F, Guess) ->
-    newton(F, deriv(F), Guess).    
+    newton(F, deriv(F), Guess).
 
 newton(F, Df, Guess) ->
     fixed_points(fun(Y) -> Y - F(Y) / Df(Y) end, Guess).

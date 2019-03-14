@@ -33,7 +33,7 @@ coord_map(Rect) ->
 % make_pict(Segs) ->
 %     fun(Rect) ->
 %         CM = coord_map(Rect),
-%         lists:foreach(fun(Seg) -> 
+%         lists:foreach(fun(Seg) ->
 %                         drawline(CM(seg_start(Seg)), CM(seg_end(Seg)))
 %                       end,
 %                       Segs)
@@ -43,7 +43,7 @@ coord_map(Rect) ->
 %     fun(Rect) ->
 %         fun(Draw) ->
 %             CM = coord_map(Rect),
-%             lists:foreach(fun(Seg) -> 
+%             lists:foreach(fun(Seg) ->
 %                             Draw(CM(seg_start(Seg)), CM(seg_end(Seg)))
 %                           end,
 %                           Segs)
@@ -75,8 +75,8 @@ draw_pict(Segs, PictFileName) ->
     Color = egd:color({0, 0, 255}),
     lists:foreach(fun(Seg) ->
                     egd:line(
-                        Image, 
-                        vector_to_point(seg_start(Seg)), 
+                        Image,
+                        vector_to_point(seg_start(Seg)),
                         vector_to_point(seg_end(Seg)), Color)
                   end, Segs),
     egd:save(egd:render(Image, png), PictFileName),
@@ -165,7 +165,7 @@ push(Comb) ->
         (repeated(
             fun(P) ->
                 Comb(Pict, P, Ratio)
-            end, 
+            end,
             N))(Pict)
     end.
 
@@ -179,7 +179,7 @@ repeated(Fun, N) ->
     end.
 
 right_push_2(Pict, N, Ratio) ->
-    (push(fun beside/3))(Pict, N, Ratio). 
+    (push(fun beside/3))(Pict, N, Ratio).
 
 below_push_2(Pict, N, Ratio) ->
     (push(fun above/3))(Pict, N, Ratio).
@@ -234,7 +234,7 @@ test_make_pict() ->
      [[125|150],375|150]] = (make_pict(segs()))(Rect2),
 
     Rect3 = make_rect(make_vector(0, 0), make_vector(300, 0), make_vector(0, 500)),
-    [[[0|0],150|0], [[0|0],75|250], [[75|250],150|0], 
+    [[[0|0],150|0], [[0|0],75|250], [[75|250],150|0],
      [[150|500],225|250], [[150|500],300|500], [[225|250],300|500],
      [[75|250],225|250]] = (make_pict(segs()))(Rect3),
 
@@ -250,7 +250,7 @@ test_beside() ->
     Pict = make_pict(segs()),
     [[[0|0],150|0], [[0|0],75|300], [[75|300],150|0],
      [[150|600],225|300], [[150|600],300|600], [[225|300],300|600],
-     [[75|300],225|300], 
+     [[75|300],225|300],
      [[300|0],450|0], [[300|0],375|300], [[375|300],450|0],
      [[450|600],525|300], [[450|600],600|600], [[525|300],600|600],
      [[375|300],525|300]] = (beside(Pict, Pict, 0.5))(Rect),
@@ -297,7 +297,7 @@ test_flip_vert() ->
     test_flip_vert_ok.
 
 test_draw_pict() ->
-    Segs = [make_seg(make_vector(0, 0), make_vector(300, 300)), 
+    Segs = [make_seg(make_vector(0, 0), make_vector(300, 300)),
             make_seg(make_vector(300, 300), make_vector(400, 300))],
     draw_pict(Segs, "test_draw_pict_0.png"),
 
